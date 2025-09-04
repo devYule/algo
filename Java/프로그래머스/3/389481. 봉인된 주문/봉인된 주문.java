@@ -10,7 +10,6 @@ class Solution {
         
         Arrays.sort(numb);
         
-        
         long cur=n;
         for(int i=0; i<m; i++) {
             if(numb[i]<=cur) cur++;
