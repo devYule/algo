@@ -1,18 +1,25 @@
 class Solution {
+    int[][] memo;
+    int n;
+    int[][] matrix;
     public int solution(int[][] matrix_sizes) {
-        int n=matrix_sizes.length;
-        int[][] dp=new int[n][n];
-        for(int gap=1; gap<n; gap++) {
-            for(int i=0; i+gap<n; i++) {
-                int j=i+gap;
-                int best=(int)1e9;
-                for(int k=i; k<j; k++) {
-                    best=Math.min(best, dp[i][k]+dp[k+1][j]+(matrix_sizes[i][0]*matrix_sizes[k][1]*matrix_sizes[j][1]));
-                }
-                dp[i][j]=best;
-            }
-        }
-        return dp[0][n-1];
+        this.matrix=matrix_sizes;
+        this.n=matrix.length;
+        this.memo=new int[n][n];
+        for(int i=0; i<n; i++) java.util.Arrays.fill(memo[i], -1);
+        return find(0, n-1);
     }
-
+    
+    int find(int i, int j) {
+        if(i>=j) return 0;
+        if(memo[i][j]!=-1) return memo[i][j];
+        int ret=(int)1e9;
+        for(int k=i; k<j; k++) {
+            int left=find(i, k);
+            int right=find(k+1, j);
+            int add=matrix[i][0]*matrix[k][1]*matrix[j][1];
+            ret=Math.min(ret, left+right+add);
+        }
+        return memo[i][j]=ret;
+    }
 }
