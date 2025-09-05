@@ -4,9 +4,7 @@ class Solution {
         if(base==0) return new int[] {-1};
         int add=s%n;
         int[] ret=new int[n];
-        java.util.Arrays.fill(ret, base);
-        int ri=n-1;
-        while(add>0) { ret[ri--]++; add--; }
+        for(int i=n-1; i>=0; i--) { ret[i]=base+(add-->0 ? 1 : 0); }
         return ret;
     }
 }
