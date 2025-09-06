@@ -7,8 +7,6 @@ class Solution {
     */
     // 마지막 작업을 처리한 코어의 번호.
     public int solution(int n, int[] cores) {
-        if(n<cores.length) return cores[n-1];
-        
         int lo=0;
         int hi=Arrays.stream(cores).max().orElse(0)*(n-cores.length);
         // 모든일을 처리할 수 있는 최소시간.
