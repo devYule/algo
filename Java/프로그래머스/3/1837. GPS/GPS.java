@@ -13,44 +13,32 @@ class Solution {
     int V;
     int[] arr;
     int MAX;
-    int ret;
-    Map<String, Integer> vis;
+    int[][] memo;
     int goal;
     public int solution(int n, int m, int[][] edge_list, int k, int[] gps_log) {
 
-        init(n+1, edge_list);
-        this.vis=new HashMap<>();
-        this.arr=gps_log;
         this.MAX=(int)1e9;
+        init(n+1, edge_list);
+        this.memo=new int[n+1][k];
+        for(int i=0; i<=n; i++) Arrays.fill(memo[i], -1);
+        this.arr=gps_log;
         this.goal=arr[arr.length-1];
-        this.ret=MAX;
-        getBest(arr[0], 1, 0);
+        int ret=getBest(arr[0], 0);
         return ret==MAX ? -1 : ret;
     }
     
-    void getBest(int cur, int nextIdx, int fixed) {
-        if(arr.length-nextIdx<fld[cur][goal]) return;
-            
-        if(fixed>=ret) return;
-        String key=nextIdx+"|"+cur;
-        Integer mapfix=vis.get(key);
-        if(mapfix==null || mapfix>fixed) {
-            vis.put(key, fixed);
-        } else return;
+    int getBest(int cur, int curIdx) {
+        if(arr.length-curIdx-1<fld[cur][goal]) return MAX;
+        if(curIdx==arr.length-1 && cur==goal) return 0;
+        if(memo[cur][curIdx]!=-1) return memo[cur][curIdx];
         
-        if(nextIdx==arr.length) {
-            if(cur==arr[arr.length-1]) ret=Math.min(ret, fixed);
-            return;
-        }
-        
-        int next=arr[nextIdx];
-        for(int i=0; i<V; i++) {
+        int next=arr[curIdx+1];
+        int ret=MAX;
+        for(int i=1; i<V; i++) {
             if(adj[cur][i]==0) continue;
-            int fix=0;
-            if(i!=next) fix=1;
-            getBest(i, nextIdx+1, fixed+fix);
+            ret=Math.min(ret, getBest(i, curIdx+1)+(i==next ? 0 : 1));
         }
-        
+        return memo[cur][curIdx]=ret;
     }
     
     void init(int V, int[][] edge) {
