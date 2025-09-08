@@ -28,20 +28,21 @@ class Solution {
             if(cnt[c-'a']==2) {
                 if(tmp<i) border.add(new int[] {tmp, i});
                 int lo=i+1;
-                int end=S.indexOf(c, lo);
-                if(lower(S.charAt(lo)) || end==-1) return INV;
-                i=lo;
+              
+                int end=lo<S.length() ? S.indexOf(c, lo) : -1;
+                if(lo>=S.length() || lower(S.charAt(lo)) || end==-1) return INV;
+                i++;
                 char inner='Z';
                 while(i<end) {
                     if(inner!='Z' && i>lo && !lower(S.charAt(i)) && !lower(S.charAt(i-1))) return INV;
+                    i++;
                     if(S.charAt(i)!=c && lower(S.charAt(i))) {
                         if(inner=='Z') inner=S.charAt(i);
                         if(inner!=S.charAt(i) || inner==c) return INV;
                         if(lower(S.charAt(i-1)) || lower(S.charAt(i+1))) return INV;
                     }
-                    i++;
                 }
-                if(lower(S.charAt(i-1))) return INV;
+                if(i>=S.length() || lower(S.charAt(i-1))) return INV;
                 if(inner!='Z') {
                     if(used[inner-'a'] || cnt[inner-'a']==0) return INV;
                     used[inner-'a']=true;
@@ -49,8 +50,8 @@ class Solution {
                 }
                 
                 cnt[c-'a']-=2;
-                border.add(new int[] {lo, end});
-                i=end+1;
+                border.add(new int[] {lo, i});
+                i++;
             } else {
                 if(tmp<i) border.add(new int[] {tmp, i-1});
                 int lo=i-1;
@@ -69,9 +70,8 @@ class Solution {
         StringBuilder sb=new StringBuilder();
         for(int[] b: border) {
             String tk=S.substring(b[0], b[1]);
-            if(tk.isEmpty()) continue;
-            sb.append(" ");
             sb.append(tk);
+            if(!tk.isEmpty()) sb.append(" ");
         }
         return sb.toString().replaceAll("[a-z]", "").replaceAll(" {2,}", " ").trim();
     }
