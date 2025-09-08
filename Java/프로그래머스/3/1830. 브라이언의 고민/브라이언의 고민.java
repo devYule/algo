@@ -29,11 +29,10 @@ class Solution {
                 if(tmp<i) border.add(new int[] {tmp, i});
                 int lo=i+1;
               
-                int end=lo<S.length() ? S.indexOf(c, lo) : -1;
-                if(lo>=S.length() || lower(S.charAt(lo)) || end==-1) return INV;
+                if(lo>=S.length() || lower(S.charAt(lo))) return INV;
                 i++;
                 char inner='Z';
-                while(i<end) {
+                while(i<S.length() && S.charAt(i)!=c) {
                     if(inner!='Z' && i>lo && !lower(S.charAt(i)) && !lower(S.charAt(i-1))) return INV;
                     i++;
                     if(S.charAt(i)!=c && lower(S.charAt(i))) {
