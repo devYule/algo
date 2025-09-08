@@ -37,8 +37,7 @@ class Solution {
                     i++;
                     if(S.charAt(i)!=c && lower(S.charAt(i))) {
                         if(inner=='Z') inner=S.charAt(i);
-                        if(inner!=S.charAt(i) || inner==c) return INV;
-                        if(lower(S.charAt(i-1)) || lower(S.charAt(i+1))) return INV;
+                        if(inner!=S.charAt(i)) return INV;
                     }
                 }
                 if(i>=S.length() || lower(S.charAt(i-1))) return INV;
