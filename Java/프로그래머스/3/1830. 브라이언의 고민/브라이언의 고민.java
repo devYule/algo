@@ -20,11 +20,11 @@ class Solution {
                 break;
             }
             
-            if(tmp==i && cnt[S.charAt(i)-'a']>2) return INV;
-            
             char c=S.charAt(i);
+            if(tmp==i && cnt[c-'a']>2) return INV;
             if(lower(S.charAt(tmp)) && cnt[c-'a']!=2) return INV;
             if(used[c-'a']) return INV;
+            
             if(cnt[c-'a']==2) {
                 if(tmp<i) border.add(new int[] {tmp, i});
                 int lo=i+1;
