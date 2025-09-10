@@ -37,8 +37,7 @@ public class Main {
 				int toggle=0;
 				for(int k=0; k<8; k++) {
 					type0+=find(i+k, j, toggle);
-					type1+=find(i+k, j, (toggle+1)%2);
-					toggle=(toggle+1)%2;
+					type1+=find(i+k, j, toggle=(toggle+1)%2);
 				}
 				ret=Math.min(ret, Math.min(type0, type1));
 			}
