@@ -31,19 +31,19 @@ public class Main {
 
 		int ret=0;
 		for(int i=0; i<n; i++) {
-			int A=buildings[i];
 			int cnt=0;
 			for(int j=0; j<n; j++) {
 				if(i==j) continue;
-				int B=buildings[j];
 				boolean can=true;
-				int ti=Math.min(i, j);
-				int tj=Math.max(i, j);
-				double acc=Math.abs(A-B)/(double)(tj-ti);
-				int lower=A<B ? A : B;
-				int loweri=A<B ? i : j;
-				for(int k=ti+1; k<tj; k++) {
-					if(lower+Math.abs(k-loweri)*acc<=buildings[k]) { can=false; break; }
+				int x1=Math.min(i, j);
+				int x3=Math.max(i, j);
+				int y1=buildings[x1];
+				int y3=buildings[x3];
+				
+				for(int k=x1+1; k<x3; k++) {
+					int x2=k;
+					int y2=buildings[k];
+					if(((long)y3-y1)*((long)x2-x1)<=((long)y2-y1)*((long)x3-x1)) { can=false; break; }
 				}
 				if(can) cnt++;
 			}
