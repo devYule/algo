@@ -3,7 +3,7 @@ class Solution {
     int[] rg={-1, 0, 1, 0};
     int[] cg={0, 1, 0, -1};
     public int solution(int[][] map) {
-        List<int[]> loc=new ArrayList<>();
+        Deque<int[]> loc=new ArrayDeque<>();
         loc.add(new int[] {0, 0});
         int n=map.length;
         int m=map[0].length;
@@ -12,20 +12,20 @@ class Solution {
         
         int round=1;
         while(!loc.isEmpty()) {
-            List<int[]> next=new ArrayList<>();
-            for(int[] ax: loc) {
+            int size=loc.size();
+            for(int i=0; i<size; i++) {
+                int[] ax=loc.pollFirst();
                 if(ax[0]==n-1 && ax[1]==m-1) return round;
-                for(int i=0; i<4; i++) {
-                    int ny=ax[0]+rg[i];
-                    int nx=ax[1]+cg[i];
+                for(int j=0; j<4; j++) {
+                    int ny=ax[0]+rg[j];
+                    int nx=ax[1]+cg[j];
                     if(ny>=0 && nx>=0 && ny<n && nx<m && map[ny][nx]==1 && !vis[ny][nx]) {
-                        next.add(new int[] {ny, nx});
+                        loc.addLast(new int[] {ny, nx});
                         vis[ny][nx]=true;
                     }
                 }
             }
             round++;
-            loc=next;
         }
         return -1;
     }
