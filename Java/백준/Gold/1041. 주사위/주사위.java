@@ -28,6 +28,8 @@ public class Main {
 		1: 4*(n-2)*(n-1)+(n-2)^2
 	*/
 
+	long ret;
+	int n, nums[];
 	long resolve(int n, int[] nums) {
 		if(n==1) {
 			int ret=0;
@@ -38,35 +40,30 @@ public class Main {
 			}
 			return (long) ret-max;
 		}
-		
-		long ret=Long.MAX_VALUE;
+		this.n=n;
+		this.nums=nums;
+		this.ret=Long.MAX_VALUE;
 
-		boolean[] cannot=new boolean[6];
-		for(int i=0; i<6; i++) {
-			cannot[i]=true;
-			cannot[5-i]=true;
-			for(int j=0; j<6; j++) {
-				if(i==j || cannot[j] || cannot[5-j]) continue;
-				cannot[j]=true;
-				cannot[5-j]=true;
-				for(int k=0; k<6; k++) {
-					if(k==i || k==j || cannot[k] || cannot[5-k]) continue;
-					long one=one(n, nums[i]);
-					long two=two(n, nums[j])+two(n, nums[i]);
-					long three=three(n, nums[k])+three(n, nums[j])+three(n, nums[i]);
-					ret=Math.min(ret, one+two+three);
-				}
-				cannot[j]=false;
-				cannot[5-j]=false;
-			}
-			cannot[i]=false;
-			cannot[5-i]=false;
-		}
+		find(new ArrayList<>(), 0);
 		return ret;
 	}
 
-	long all(int n) {
-		return (long)Math.pow(n, 3);
+	void find(List<Integer> selected, int state) {
+		if(selected.size()==3) {
+			long one=one(n, nums[selected.get(0)]);
+			long two=two(n, nums[selected.get(0)])+two(n, nums[selected.get(1)]);
+			long three=three(n, nums[selected.get(0)])+three(n, nums[selected.get(1)])+three(n, nums[selected.get(2)]);
+			ret=Math.min(ret, one+two+three);
+			return;
+		}
+
+		for(int i=0; i<6; i++) {
+			int j=5-i;
+			if((state&1<<i)!=0 || (state&1<<j)!=0) continue;
+			selected.add(i);
+			find(selected, state|1<<i);
+			selected.remove(Integer.valueOf(i));
+		}
 	}
 
 	long two(int n, int face) {
