@@ -24,16 +24,15 @@ public class Main {
 	}
 
 	String tob(int n, int b) {
-		if(b>0 && n<0) return "-"+tob(-n, b);
+		if(n<0 && b>0) return "-"+tob(-n, b);
 		StringBuilder sb=new StringBuilder();
 		while(n!=0) {
 			int r=n%b;
 			n/=b;
 			if(r<0) {
-				r+=Math.abs(b);
+				sb.append(Math.abs(b)+r);
 				n+=1;
-			}
-			sb.append(r);
+			} else sb.append(r);
 		}
 		if(sb.length()==0) return "0";
 		return sb.reverse().toString();
