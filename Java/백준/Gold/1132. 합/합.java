@@ -20,49 +20,45 @@ public class Main {
 		}
 	}
 
-	boolean[] exst;
-	int exstCnt;
+	boolean[] exst, cannotZero;
+	long[] weight;
 	char[][] numb;
-	boolean[] cannotZero;
+	long[][] memo;
+	List<Integer> use;
 	long resolve(int n, char[][] numb) {
+		this.memo=new long[1<<10][10];
 		this.numb=numb;
 		this.exst=new boolean[10];
+		this.use=new ArrayList<>();
+		this.weight=new long[10];
 		this.cannotZero=new boolean[10];
+		for(int i=0; i<1<<10; i++) Arrays.fill(memo[i], -1);
 		for(char[] num: numb) {
-			for(int i=0; i<num.length; i++) {
+			long p=1;
+			for(int i=num.length-1; i>=0; i--) {
 				if(i==0) cannotZero[num[i]-'A']=true;
-				if(exst[num[i]-'A']) continue;
+				weight[num[i]-'A']+=p;
 				exst[num[i]-'A']=true;
-				exstCnt++;
+				p*=10;
 			}
 		}
-		return find(0, 0, new int[10]);
+		for(int i=0; i<exst.length; i++) {
+			if(exst[i]) use.add(i);
+		}
+
+		return find(0, 0);
 	}
 
-	long find(int mask, int intChar, int[] alp) {
-		if(Integer.bitCount(mask)==exstCnt || intChar>('J'-'A')) {
-			long ret=0;
-			for(char[] num: numb) {
-				long loc=0;
-				for(int i=0; i<num.length; i++) {
-					if(i==0 && alp[num[i]-'A']==0) return -1;
-					loc=loc*10+alp[num[i]-'A'];
-				}
-				ret+=loc;
-			}
-			return ret;
-		}
-
-		if(!exst[intChar]) return find(mask, intChar+1, alp);
-
-		long ret=0;
+	long find(int mask, int idx) {
+		if(use.size()==idx) return 0;
+		if(memo[mask][idx]!=-1) return memo[mask][idx];
+		long ret=Long.MIN_VALUE;
 		for(int i=9; i>=0; i--) {
-			if((mask&1<<i)!=0 || (i==0 && cannotZero[intChar])) continue;
-			alp[intChar]=i;
-			ret=Math.max(ret, find(mask|1<<i, intChar+1, alp));
-			alp[intChar]=0;
+			if((mask&1<<i)!=0 || (i==0 && cannotZero[use.get(idx)])) continue;
+			long curDist=weight[use.get(idx)]*i;
+			ret=Math.max(ret, find(mask|1<<i, idx+1)+curDist);
 		}
-		return ret;
+		return memo[mask][idx]=ret;
 	}
 
 }
