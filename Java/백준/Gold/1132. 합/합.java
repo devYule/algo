@@ -23,11 +23,14 @@ public class Main {
 	boolean[] exst;
 	int exstCnt;
 	char[][] numb;
+	boolean[] cannotZero;
 	long resolve(int n, char[][] numb) {
 		this.numb=numb;
 		this.exst=new boolean[10];
+		this.cannotZero=new boolean[10];
 		for(char[] num: numb) {
 			for(int i=0; i<num.length; i++) {
+				if(i==0) cannotZero[num[i]-'A']=true;
 				if(exst[num[i]-'A']) continue;
 				exst[num[i]-'A']=true;
 				exstCnt++;
@@ -54,7 +57,7 @@ public class Main {
 
 		long ret=0;
 		for(int i=9; i>=0; i--) {
-			if((mask&1<<i)!=0) continue;
+			if((mask&1<<i)!=0 || (i==0 && cannotZero[intChar])) continue;
 			alp[intChar]=i;
 			ret=Math.max(ret, find(mask|1<<i, intChar+1, alp));
 			alp[intChar]=0;
