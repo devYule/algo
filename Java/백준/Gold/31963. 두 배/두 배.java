@@ -1,3 +1,4 @@
+import java.math.*;
 import java.util.*;
 import java.io.*;
 public class Main {
@@ -19,13 +20,18 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int[] nums) {
+	long resolve(int n, int[] nums) {
 
-		int ret=0;
+		long ret=0;
+		BigInteger prev=BigInteger.valueOf(nums[0]);
 		for(int i=1; i<n; i++) {
-			if(nums[i]<nums[i-1]) {
-				while(nums[i]<nums[i-1]) { nums[i]*=2; ret++; }
-			}
+			BigInteger cur=BigInteger.valueOf(nums[i]);
+			if(cur.compareTo(prev)<0) {
+				int bitGap=prev.bitLength()-cur.bitLength();
+				if(cur.shiftLeft(bitGap).compareTo(prev)<0) bitGap++;
+				ret+=bitGap;
+				prev=cur.shiftLeft(bitGap);
+			} else prev=cur;
 		}
 
 		return ret;
