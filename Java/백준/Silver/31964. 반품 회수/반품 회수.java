@@ -24,17 +24,22 @@ public class Main {
 		List<Integer> nextIdx=new ArrayList<>();
 		for(int i=0; i<n; i++) nextIdx.add(i);
 
-		nextIdx.sort((a, b)-> out[a]-out[b]);
+		nextIdx.sort((a, b)-> dist[b]-dist[a]);
 
-		int lastLocation=0;
 		int time=0;
-		for(int i=0; i<n; i++) {
+
+		int lastIdx=nextIdx.get(0);
+		time+=dist[lastIdx];
+		if(out[lastIdx]>dist[lastIdx]) time+=out[lastIdx]-dist[lastIdx];
+		int lastLoc=dist[lastIdx];
+
+		for(int i=1; i<nextIdx.size(); i++) {
 			int idx=nextIdx.get(i);
-			time+=Math.abs(lastLocation-dist[idx]);
-			if(time<out[idx]) time+=out[idx]-time;
-			lastLocation=dist[idx];
+			time+=lastLoc-dist[idx];
+			if(out[idx]>time) time+=out[idx]-time;
+			lastLoc=dist[idx];
 		}
-		return time+lastLocation;
+		return time+lastLoc;
 
 	}
 
