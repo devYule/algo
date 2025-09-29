@@ -29,14 +29,12 @@ public class Main {
 		while(right<n) {
 			while(right<n && (selCnt<2 || type[candy[right]]!=0)) {
 				if(type[candy[right]]==0) selCnt++;
-				type[candy[right]]++;
-				right++;
+				type[candy[right++]]++;
 			}
 			ret=Math.max(ret, right-left);
 			while(selCnt>1 && left<right) {
 				type[candy[left]]--;
-				if(type[candy[left]]==0) selCnt--;
-				left++;
+				if(type[candy[left++]]==0) selCnt--;
 			}
 		}
 		return ret;
