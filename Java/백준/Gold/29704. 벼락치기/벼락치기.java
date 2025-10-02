@@ -26,29 +26,17 @@ public class Main {
 		}
 	}
 
-	int n, each[][];
-	int[] best;
 	int resolve(int n, int t, int[][] each) {
-		this.n=n; this.each=each; this.best=new int[t+1];
-		Arrays.fill(this.best, (int)1e9);
+		int[] dp=new int[t+1];
 		int sum=Arrays.stream(each).mapToInt(e->e[1]).sum();
-		return find(t, sum, new boolean[each.length]);
-	}
-	int find(int rest, int pay, boolean[] solved) {
-		if(pay==0) return 0;
-		if(rest==0) return pay;
-		if(best[rest]<=pay) return (int)1e9;
-		best[rest]=pay;
 
-		int ret=(int)1e9;
 		for(int i=0; i<n; i++) {
-			if(solved[i] || rest-each[i][0]<0) continue;
-			solved[i]=true;
-			ret=Math.min(ret, find(rest-each[i][0], pay-each[i][1], solved));
-			if(ret==0) return 0;
-			solved[i]=false;
+			int day=each[i][0];
+			for(int j=t; j>=day; j--) {
+				dp[j]=Math.max(dp[j], dp[j-day]+each[i][1]);
+			}
 		}
-		if(ret==(int)1e9) return pay;
-		return ret;
+		
+		return sum-dp[t];
 	}
 }
