@@ -28,47 +28,35 @@ public class Main {
 			bw.flush();
 		}
 	}
-
-	/*
-		N, M<=1000
-		K<=min(N*M, 100_000)
-
-		N*M 직사각형
-		map[i][j]=옥수수의 가치 (1~N*M 의 정수)
-
-		K그루의 옥수수 수확. 가장 가가 높은 순.
-		수확은 가장 바깥에서 옥수수를 밟지 않고 이동할 수 있어야 함.
-
-	*/
-	// 수확 순서대로 인덱스
-
 	
 	int[] rg={-1, 0, 1, 0};
 	int[] cg={0, 1, 0, -1};
 
 	String resolve(int n, int m, int k, int[][] map) {
 		PriorityQueue<int[]> corn=new PriorityQueue<>((a, b)-> b[2]-a[2]);
+		boolean[][] added=new boolean[n][m];
 		for(int i=0; i<n; i++) {
 			for(int j=0; j<m; j++) {
-				if(i==0 || j==0 || i==n-1 || j==m-1) corn.add(new int[] {i, j, map[i][j]});
-			}
-		}
-		boolean[][] vis=new boolean[n][m];
-		List<String> ret=new ArrayList<>();
-		for(int i=0; i<k; i++) {
-			while(!corn.isEmpty()) {
-				int[] c=corn.poll();
-				int y=c[0], x=c[1];
-				if(vis[y][x]) continue;
-				vis[y][x]=true;
-				ret.add((y+1) + " " + (x+1));
-				for(int j=0; j<4; j++) {
-					int ny=y+rg[j], nx=x+cg[j];
-					if(ny>=0 && nx>=0 && ny<n && nx<m && !vis[ny][nx]) corn.add(new int[] {ny, nx, map[ny][nx]});
+				if(i==0 || j==0 || i==n-1 || j==m-1) {
+					corn.add(new int[] {i, j, map[i][j]});
+					added[i][j]=true;
 				}
-				break;
 			}
 		}
-		return ret.stream().collect(java.util.stream.Collectors.joining("\n"));
+		StringBuilder sb=new StringBuilder(4*k-1);
+		for(int i=0; i<k; i++) {
+			int[] c=corn.poll();
+			int y=c[0], x=c[1];
+			sb.append(y+1).append(" ").append(x+1);
+			if(i<k-1) sb.append("\n");
+			for(int j=0; j<4; j++) {
+				int ny=y+rg[j], nx=x+cg[j];
+				if(ny>=0 && nx>=0 && ny<n && nx<m && !added[ny][nx]) {
+					corn.add(new int[] {ny, nx, map[ny][nx]});
+					added[ny][nx]=true;
+				}
+			}
+		}
+		return sb.toString();
 	}
 }
