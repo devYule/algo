@@ -23,17 +23,15 @@ public class Main {
 	}
 
 	int resolve(int n, int k, int[] nums) {
-		int[][] dp=new int[n][k+1];
-		dp[0][0]=1;
-		for(int i=nums[0]; i<=k; i+=nums[0]) dp[0][i]=1;
+		int[] dp=new int[k+1];
+		dp[0]=1;
+		for(int i=nums[0]; i<=k; i+=nums[0]) dp[i]=1;
 		for(int i=1; i<n; i++) {
 			int num=nums[i];
 			for(int j=0; j<=k; j++) {
-				dp[i][j]=dp[i-1][j];
-				if(j>=num) dp[i][j]+=dp[i][j-num];
+				if(j>=num) dp[j]+=dp[j-num];
 			}
 		}
-		return dp[n-1][k];
+		return dp[k];
 	}
-
 }
