@@ -35,7 +35,8 @@ public class Main {
 		this.n=n; this.m=m; this.map=map;
 		this.memo=new int[n][m];
 		for(int i=0; i<n; i++) Arrays.fill(memo[i], -1);
-		
+		memo[n-1][m-1]=map[n-1][m-1];
+
 		return find(0, 0);
 	}
 
