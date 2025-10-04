@@ -1,36 +1,36 @@
-import java.util.Arrays;
-import java.util.Scanner;
-
+import java.util.*;
+import java.io.*;
 public class Main {
+	public static void main(String[] args) throws IOException {
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-    private static int N;
-    private static int[] nums;
-    private static int[] dp;
+			int n=Integer.parseInt(br.readLine());
+			int[] nums=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        N = sc.nextInt();
-        nums = new int[N];
-        dp = new int[N];
 
-        for (int i = 0; i < N; i++) {
-            nums[i] = sc.nextInt();
-        }
+			bw.write(
+				String.valueOf(
+					new Main().resolve(
+						n, nums
+					)
+				)
+			);
+			bw.flush();
+		}
+	}
 
-        for (int i = 0; i < N; i++) {
-            dp[i] = nums[i];
-
-            for (int j = 0; j < i; j++) {
-                if (nums[i] <= nums[j]) continue;
-                dp[i] = Math.max(dp[i], dp[j] + nums[i]);
-            }
-        }
-
-        int r = -1;
-        for (int i = 0; i < N; i++) {
-            r = Math.max(r, dp[i]);
-        }
-        System.out.println(r);
-    }
+	int resolve(int n, int[] nums) {
+		int[] dp=new int[n];
+		for(int i=0; i<n; i++) dp[i]=nums[i];
+		for(int i=0; i<n; i++) {
+			for(int j=i+1; j<n; j++) {
+				if(nums[i]<nums[j]) {
+					dp[j]=Math.max(dp[j], dp[i]+nums[j]);
+				}
+			}
+		}
+		return Arrays.stream(dp).max().orElseThrow();
+	}
 
 }
