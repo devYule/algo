@@ -27,32 +27,16 @@ public class Main {
 		}
 	}
 
-	final int[] rg={0, 1, 1};
-	final int[] cg={1, 0, 1};
-	int[][] memo;
-	int n, m, map[][];
 	int resolve(int n, int m, int[][] map) {
-		this.n=n; this.m=m; this.map=map;
-		this.memo=new int[n][m];
-		for(int i=0; i<n; i++) Arrays.fill(memo[i], -1);
-		memo[n-1][m-1]=map[n-1][m-1];
-
-		return find(0, 0);
-	}
-
-	int find(int y, int x) {
-		if(memo[y][x]!=-1) return memo[y][x];
-		int ret=0;
-		for(int i=0; i<3; i++) {
-			int ny=y+rg[i], nx=x+cg[i];
-			if(valid(ny, nx)) {
-				ret=Math.max(ret, find(ny, nx));
+		int[][] dp=new int[n][m];
+		for(int i=0; i<n; i++) {
+			for(int j=0; j<m; j++) {
+				if(i>0) dp[i][j]=dp[i-1][j];
+				if(j>0) dp[i][j]=Math.max(dp[i][j], dp[i][j-1]);
+				if(i>0 && j>0) dp[i][j]=Math.max(dp[i][j], dp[i-1][j-1]);
+				dp[i][j]+=map[i][j];
 			}
 		}
-		return memo[y][x]=ret+map[y][x];
-	}
-
-	boolean valid(int y, int x) {
-		return y>=0 && x>=0 && y<n && x<m;
+		return dp[n-1][m-1];
 	}
 }
