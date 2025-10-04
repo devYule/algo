@@ -21,16 +21,16 @@ public class Main {
 
 	final int MOD=1_000_000_000;
 	int resolve(int n, int k) {
-		int[][] dp=new int[k+1][n+1];
-		for(int i=0; i<=n; i++) dp[1][i]=1;
+		int[] dp=new int[n+1];
+		Arrays.fill(dp, 1);
+
 		for(int i=2; i<=k; i++) {
 			for(int j=0; j<=n; j++) {
-				for(int l=j; l>=0; l--) {
-					dp[i][j]=(dp[i][j]+dp[i-1][j-l]%MOD)%MOD;
-				}
+				if(j==0) dp[j]=1;
+				else dp[j]=(dp[j-1]+dp[j])%MOD;
 			}
 		}
-		return dp[k][n];
+		return dp[n];
 	}
 
 }
