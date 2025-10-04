@@ -25,14 +25,25 @@ public class Main {
 		}
 	}
 
+	int n, jobs[][];
+	int[] memo;
 	int resolve(int n, int[][] jobs) {
-		int[] dp=new int[n+2];
-		for(int i=n; i>=1; i--) {
-			int[] job=jobs[i-1];
-			dp[i]=dp[i+1];
-			if(job[0]+i<=n+1) dp[i]=Math.max(dp[i], dp[i+job[0]]+job[1]);
-		}
-		return dp[1];
+		this.n=n;
+		this.jobs=jobs;
+		this.memo=new int[n];
+		Arrays.fill(memo, -1);
+		return find(0);
+	}
+
+	int find(int day) {
+		if(day==n) return 0;
+		if(memo[day]!=-1) return memo[day];
+
+		int[] job=jobs[day];
+
+		int ret=find(day+1);
+		if(day+job[0]<=n) ret=Math.max(ret, find(day+job[0])+job[1]);
+		return memo[day]=ret;
 	}
 
 }
