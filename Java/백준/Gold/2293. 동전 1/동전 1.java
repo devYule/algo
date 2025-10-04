@@ -27,9 +27,7 @@ public class Main {
 		dp[0]=1;
 		for(int i=0; i<n; i++) {
 			int num=nums[i];
-			for(int j=0; j<=k; j++) {
-				if(j>=num) dp[j]+=dp[j-num];
-			}
+			for(int j=num; j<=k; j++) dp[j]+=dp[j-num];
 		}
 		return dp[k];
 	}
