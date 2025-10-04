@@ -25,8 +25,7 @@ public class Main {
 	int resolve(int n, int k, int[] nums) {
 		int[] dp=new int[k+1];
 		dp[0]=1;
-		for(int i=nums[0]; i<=k; i+=nums[0]) dp[i]=1;
-		for(int i=1; i<n; i++) {
+		for(int i=0; i<n; i++) {
 			int num=nums[i];
 			for(int j=0; j<=k; j++) {
 				if(j>=num) dp[j]+=dp[j-num];
