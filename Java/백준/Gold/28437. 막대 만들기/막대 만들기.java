@@ -31,9 +31,8 @@ public class Main {
 			int sqrt=(int) Math.sqrt(i);
 			for(int j=1; j<=sqrt; j++) {
 				if(i%j!=0) continue;
-				int bu=dp[i/j];
 				dp[i]+=dp[j];
-				if(j!=1 && j!=i/j) dp[i]+=bu;
+				if(j!=1 && j!=i/j) dp[i]+=dp[i/j];
 			}
 		}
 		List<Integer> ret=new ArrayList<>();
