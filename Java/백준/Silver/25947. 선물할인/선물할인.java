@@ -22,24 +22,21 @@ public class Main {
 	}
 
 	int resolve(int n, int max, int a, int[] price) {
-		boolean[] vis=new boolean[n];
 		Arrays.sort(price);
 		long sum=0;
 		int used=0;
 		int ret=0;
+		PriorityQueue<Integer> pos=new PriorityQueue<>((a1, b1) -> b1-a1);
 		for(int i=0; i<n; i++) {
 			long tmp=sum+price[i];
+			pos.add(i);
 			ret++;
 			if(tmp>max) {
-				int cur=i;
-				while(cur>=0 && used<a) {
-					if(!vis[cur]) {
-						vis[cur]=true;
-						tmp-=price[cur]/2;
-						used++;
-						if(tmp<=max) break;
-					}
-					cur--;
+				while(!pos.isEmpty() && used<a) {
+					int targeti=pos.poll();
+					tmp-=price[targeti]/2;
+					used++;
+					if(tmp<=max) break;
 				}
 				if(tmp>max) {
 					ret--;
