@@ -18,34 +18,25 @@ public class Main {
 
 	int resolve(char[] C) {
 		int n=C.length;
-		TreeSet<Integer> a=new TreeSet<>();
-		TreeSet<Integer> b=new TreeSet<>();
-		TreeSet<Integer> c=new TreeSet<>();
+		int a=0, b=0, ab=0, bc=0;
 		for(int i=0; i<n; i++) {
-			if(C[i]=='A') a.add(i);
-			else if(C[i]=='B') b.add(i);
-			else if(C[i]=='C') c.add(i);
-		}
-
-		int ret=0;
-		int size=c.size();
-		for(int i=0; i<size; i++) {
-			int cloc=c.pollFirst();
-			Integer res=b.lower(cloc);
-			if(res!=null) {
-				b.remove(res);
-				ret++;
+			if(C[i]=='A') a++;
+			else if(C[i]=='B') {
+				if(a>0) {
+					ab++;
+					a--;
+				} else b++;
+			} else {
+				if(b>0) {
+					bc++;
+					b--;
+				} else if(ab>0) {
+					ab--;
+					bc++;
+					a++;
+				}
 			}
 		}
-		size=b.size();
-		for(int i=0; i<size; i++) {
-			int bloc=b.pollFirst();
-			Integer res=a.lower(bloc);
-			if(res!=null) {
-				a.remove(res);
-				ret++;
-			}
-		}
-		return ret;
+		return ab+bc;
 	}
 }
