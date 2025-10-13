@@ -23,11 +23,11 @@ public class Main {
 
 		for(int i=0; i<n; i++) {
 			int mod=work[i]%7;
-			for(int cnt=n-1; cnt>=0; cnt--) {
+			for(int cnt=n; cnt>=1; cnt--) {
 				for(int j=0; j<7; j++) {
-					if(dp[cnt][j]) {
+					if(dp[cnt-1][j]) {
 						if((mod+j)%7==4) return "YES";
-						dp[cnt+1][(mod+j)%7]=true;
+						dp[cnt][(mod+j)%7]=true;
 					}
 				}
 			}
