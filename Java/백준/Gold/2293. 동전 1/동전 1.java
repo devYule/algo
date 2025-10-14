@@ -7,14 +7,15 @@ public class Main {
 
 			StringTokenizer st=new StringTokenizer(br.readLine());
 			int n=Integer.parseInt(st.nextToken());
-			int m=Integer.parseInt(st.nextToken());
-			int[] nums=new int[n];
-			for(int i=0; i<n; i++) nums[i]=Integer.parseInt(br.readLine());
+			int k=Integer.parseInt(st.nextToken());
+
+			int[] coin=new int[n];
+			for(int i=0; i<n; i++) coin[i]=Integer.parseInt(br.readLine());
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, m, nums
+						n, k, coin
 					)
 				)
 			);
@@ -22,13 +23,16 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int k, int[] nums) {
+	int resolve(int n, int k, int[] coin) {
 		int[] dp=new int[k+1];
 		dp[0]=1;
-		for(int i=0; i<n; i++) {
-			int num=nums[i];
-			for(int j=num; j<=k; j++) dp[j]+=dp[j-num];
+		for(int c: coin) {
+			for(int i=1; i<=k; i++) {
+				if(i-c>=0) dp[i]+=dp[i-c];
+			}
 		}
+
 		return dp[k];
 	}
+
 }
