@@ -1,41 +1,42 @@
-import java.util.Scanner;
-
+import java.util.*;
+import java.io.*;
 public class Main {
+	public static void main(String[] args) throws IOException {
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-    private static int N;
-    private static int[] nums;
-    private static int[] dp;
+			int n=Integer.parseInt(br.readLine());
+			int[] wine=new int[n];
+			for(int i=0; i<n; i++) wine[i]=Integer.parseInt(br.readLine());
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        N = sc.nextInt();
-        nums = new int[N + 1];
-        dp = new int[N + 1];
+			bw.write(
+				String.valueOf(
+					new Main().resolve(
+						n, wine
+					)
+				)
+			);
+			bw.flush();
+		}
+	}
 
-        for (int i = 1; i <= N; i++) {
-            nums[i] = sc.nextInt();
-        }
+	int resolve(int n, int[] wine) {
+		int[] dp=new int[n+1];
+		if(n<=2) return Arrays.stream(wine).sum();
+		
+		dp[1]=wine[0];
+		dp[2]=wine[0]+wine[1];
 
-        if (N == 1 || N == 2) {
-            int r = 0;
-            for (int i = 1; i <= N; i++) {
-                r += nums[i];
-            }
-            System.out.println(r);
-            return;
-        }
-
-
-        dp[1] = nums[1];
-        dp[2] = nums[1] + nums[2];
-        for (int i = 3; i <= N; i++) {
-            dp[i] = Math.max(dp[i - 1], Math.max(
-                    dp[i - 2] + nums[i],
-                    dp[i - 3] + nums[i] + nums[i - 1]
-            ));
-        }
-        System.out.println(dp[N]);
-        sc.close();
-    }
+		int ret=0;
+		for(int i=3; i<=n; i++) {
+			ret=Math.max(ret, dp[i]=Math.max(
+				dp[i-1], Math.max(
+					wine[i-1]+dp[i-2],
+					wine[i-1]+wine[i-2]+dp[i-3]
+				)
+			));
+		}
+		return ret;
+	}
 
 }
