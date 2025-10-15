@@ -5,14 +5,11 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-			int n=Integer.parseInt(br.readLine());
-			int[] nums=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
-
-
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, nums
+						Integer.parseInt(br.readLine()),
+						Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray()
 					)
 				)
 			);
@@ -20,17 +17,18 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int[] nums) {
-		int[] dp=new int[n];
-		for(int i=0; i<n; i++) dp[i]=nums[i];
-		for(int i=0; i<n; i++) {
-			for(int j=i+1; j<n; j++) {
-				if(nums[i]<nums[j]) {
-					dp[j]=Math.max(dp[j], dp[i]+nums[j]);
-				}
+	int resolve(int n, int[] arr) {
+		int[] dp=new int[n+1];
+		int ret=0;
+		for(int i=1; i<=n; i++) {
+			int cur=arr[i-1];
+			dp[i]=cur;
+			for(int j=0; j<i-1; j++) {
+				if(arr[j]<cur) dp[i]=Math.max(dp[i], dp[j+1]+cur);
 			}
+			ret=Math.max(ret, dp[i]);
 		}
-		return Arrays.stream(dp).max().orElseThrow();
+		return ret;
 	}
 
 }
