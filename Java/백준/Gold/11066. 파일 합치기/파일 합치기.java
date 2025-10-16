@@ -22,38 +22,27 @@ public class Main {
 		}
 	}
 
-	int n, numb[], memo[][], sum[];
 	int resolve(int n, int[] numb) {
-		this.n=n;
-		this.numb=numb;
-		this.memo=new int[n][n];
+		int[][] dp=new int[n][n];
 		for(int i=0; i<n; i++) {
 			for(int j=0; j<n; j++) {
-				if(i==j) memo[i][j]=0;
-				else memo[i][j]=-1;
+				if(i==j) continue;
+				dp[i][j]=(int)1e9;
 			}
 		}
-		this.sum=new int[n];
-		sum[0]=numb[0];
-		for(int i=1; i<n; i++) sum[i]=sum[i-1]+numb[i];
+		int[] sumArr=new int[n];
+		sumArr[0]=numb[0];
+		for(int i=1; i<n; i++) sumArr[i]=sumArr[i-1]+numb[i];
 
-		int ret=getMin(0, n-1);
-		return ret;
-	}
-
-	int sum(int l, int r) {
-		return l==0 ? sum[r] : sum[r]-sum[l-1];
-	}
-
-	int getMin(int l, int r) {
-		if(memo[l][r]!=-1) return memo[l][r];
-		int ret=(int)1e9;
-		for(int i=l; i<r; i++) {
-			int lr=getMin(l, i);
-			int rr=getMin(i+1, r);
-			ret=Math.min(ret, lr+rr);
+		for(int gap=1; gap<n; gap++) {
+			for(int left=0; left+gap<n; left++) {
+				int right=left+gap;
+				int sum=sumArr[right]-(left==0 ? 0 : sumArr[left-1]);
+				for(int cut=left; cut+1<=right; cut++) {
+					dp[left][right]=Math.min(dp[left][right], dp[left][cut]+dp[cut+1][right]+sum);
+				}
+			}
 		}
-		return memo[l][r]=ret+sum(l, r);
+		return dp[0][n-1];
 	}
-
 }
