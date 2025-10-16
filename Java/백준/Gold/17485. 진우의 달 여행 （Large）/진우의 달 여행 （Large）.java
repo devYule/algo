@@ -27,32 +27,31 @@ public class Main {
 		}
 	}
 
-	int m, min0, map[][], memo[][][];
 	int resolve(int n, int m, int[][] map) {
-		this.m=m; this.map=map;
-		this.memo=new int[n][m][4];
-		for(int i=0; i<n; i++) {
+		int[][] dp=new int[m][3];
+		for(int i=0; i<m; i++) Arrays.fill(dp[i], map[0][i]);
+
+		for(int i=1; i<n; i++) {
+			int[][] newDp=new int[m][3];
 			for(int j=0; j<m; j++) {
-				Arrays.fill(memo[i][j], -1);
+				int cur=map[i][j];
+				for(int k=-1; k<=1; k++) {
+					newDp[j][k+1]=(int)1e9;
+					if(j+k<0 || j+k>=m) continue;
+					for(int l=-1; l<=1; l++) {
+						if(k==l || j+k+l<0 || j+k+l>=m) continue;
+						newDp[j][k+1]=Math.min(newDp[j][k+1], dp[j+k][l+1]+cur);
+					}
+				}
 			}
+			dp=newDp;
 		}
-		this.min0=Arrays.stream(map[0]).min().orElse(0);
 		int ret=(int)1e9;
 		for(int i=0; i<m; i++) {
-			ret=Math.min(ret, find(n-1, i, 2));
+			for(int j=0; j<3; j++) {
+				ret=Math.min(ret, dp[i][j]);
+			}
 		}
 		return ret;
-	}
-
-	int find(int line, int col, int prevSelect) {
-		if(col<0 || col>=m) return (int)1e9;
-		if(line==0) return map[line][col];
-		if(memo[line][col][prevSelect+1]!=-1) return memo[line][col][prevSelect+1];
-		int ret=(int)1e9;
-		for(int j=-1; j<=1; j++) {
-			if(prevSelect==j) continue;
-			ret=Math.min(ret, find(line-1, col+j, j)+map[line][col]);
-		}
-		return memo[line][col][prevSelect+1]=ret;
 	}
 }
