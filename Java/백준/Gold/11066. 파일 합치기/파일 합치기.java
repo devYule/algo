@@ -1,47 +1,59 @@
-
-import java.util.Scanner;
-
+import java.util.*;
+import java.io.*;
 public class Main {
-    private static int CNT;
-    private static int N;
-    private static int[] nums;
-    private static int[][] memo;
+	public static void main(String[] args) throws IOException {
+		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-    private static Scanner sc = new Scanner(System.in);
+			int round=Integer.parseInt(br.readLine());
+			for(int i=0; i<round; i++) {
 
-    public static void main(String[] args) {
-        CNT = sc.nextInt();
-        for (int i = 0; i < CNT; i++) {
-            System.out.println(solution());
-        }
-    }
+				if(i!=0) bw.write("\n");
+				bw.write(
+					String.valueOf(
+						new Main().resolve(
+							Integer.parseInt(br.readLine()),
+							Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray()
+						)
+					)
+				);
+			}
+			bw.flush();
+		}
+	}
 
-    private static int solution() {
+	int n, numb[], memo[][], sum[];
+	int resolve(int n, int[] numb) {
+		this.n=n;
+		this.numb=numb;
+		this.memo=new int[n][n];
+		for(int i=0; i<n; i++) {
+			for(int j=0; j<n; j++) {
+				if(i==j) memo[i][j]=0;
+				else memo[i][j]=-1;
+			}
+		}
+		this.sum=new int[n];
+		sum[0]=numb[0];
+		for(int i=1; i<n; i++) sum[i]=sum[i-1]+numb[i];
 
-        N = sc.nextInt();
-        memo = new int[N][N];
-        nums = new int[N];
-        for (int i = 0; i < N; i++) {
-            nums[i] = sc.nextInt();
-        }
+		int ret=getMin(0, n-1);
+		return ret;
+	}
 
-        return execute(0, N - 1);
-    }
+	int sum(int l, int r) {
+		return l==0 ? sum[r] : sum[r]-sum[l-1];
+	}
 
-    private static int execute(int from, int to) {
-        if (from == to) return 0;
-        if (memo[from][to] != 0) return memo[from][to];
+	int getMin(int l, int r) {
+		if(memo[l][r]!=-1) return memo[l][r];
+		int ret=(int)1e9;
+		for(int i=l; i<r; i++) {
+			int lr=getMin(l, i);
+			int rr=getMin(i+1, r);
+			ret=Math.min(ret, lr+rr);
+		}
+		return memo[l][r]=ret+sum(l, r);
+	}
 
-        int r = Integer.MAX_VALUE;
-        int sum = 0;
-        for (int i = from; i <= to; i++) {
-            sum += nums[i];
-        }
-        for (int i = from; i < to; i++) {
-            int le = execute(from, i);
-            int ri = execute(i + 1, to);
-            r = Math.min(r, le + ri + sum);
-        }
-        return memo[from][to] = r;
-    }
 }
