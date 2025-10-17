@@ -6,14 +6,19 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
-			int[] nw=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
-			int s=Integer.parseInt(br.readLine());
-			int[] sw=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
+			int[] stone=new int[n];
+			StringTokenizer st=new StringTokenizer(br.readLine());
+			for(int i=0; i<n; i++) stone[i]=Integer.parseInt(st.nextToken());
+
+			int q=Integer.parseInt(br.readLine());
+			int[] Q=new int[q];
+			st=new StringTokenizer(br.readLine());
+			for(int i=0; i<q; i++) Q[i]=Integer.parseInt(st.nextToken());
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, nw, s, sw
+						n, stone, q, Q
 					)
 				)
 			);
@@ -21,24 +26,28 @@ public class Main {
 		}
 	}
 
-	String resolve(int n, int[] nw, int s, int[] sw) {
-		int sum=Arrays.stream(nw).sum();
-		boolean[][] dp=new boolean[n+1][sum+1];
-		dp[0][0]=true;
+	String resolve(int n, int[] stone, int q, int[] Q) {
+		int sum=Arrays.stream(stone).sum();
+		boolean[] dp=new boolean[sum+1];
+		dp[0]=true;
 
-		for(int i=1; i<=n; i++) {
-			int w=nw[i-1];
-			dp[i][0]=true;
-			for(int j=0; j<=sum; j++) {
-				if(dp[i-1][j]) {
-					dp[i][j]=true;
-					dp[i][Math.abs(j-w)]=true;
-					if(w+j<=sum) dp[i][w+j]=true;
+		for(int s: stone) {
+			boolean[] newDp=new boolean[sum+1];
+			for(int i=0; i<=sum; i++) {
+				if(dp[i]) {
+					if(i+s<=sum) newDp[i+s]=true;
+					if(Math.abs(i-s)>=0) newDp[Math.abs(i-s)]=true;
+					newDp[i]=true;
 				}
 			}
+			dp=newDp;
 		}
 
-		return Arrays.stream(sw).boxed().map(it->it<=sum && dp[n][it] ? "Y" : "N").collect(java.util.stream.Collectors.joining(" "));
+		StringBuilder sb=new StringBuilder();
+		for(int i=0; i<q; i++) {
+			if(i!=0) sb.append(" ");
+			sb.append(Q[i]<=sum && dp[Q[i]] ? "Y" : "N");
+		}
+		return sb.toString();
 	}
-
 }
