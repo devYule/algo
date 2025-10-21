@@ -5,14 +5,11 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-			int n=Integer.parseInt(br.readLine());
-			int[] edge=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
-
-
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, edge
+						Integer.parseInt(br.readLine()),
+						Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray()
 					)
 				)
 			);
@@ -22,32 +19,35 @@ public class Main {
 
 	List<Integer>[] adj;
 	int V;
-	int resolve(int n, int[] edge) {
-		init(n, edge);
+	int resolve(int n, int[] rel) {
+		init(n, rel);
+
 		return find(0);
 	}
+
 	int find(int cur) {
-		List<Integer> childTime=new ArrayList<>();
+		List<Integer> ct=new ArrayList<>();
 		for(int next: adj[cur]) {
-			childTime.add(find(next));
+			ct.add(find(next));
 		}
-		childTime.sort((a, b)->b-a);
+
+		ct.sort(Comparator.reverseOrder());
 
 		int ret=0;
-		for(int i=0; i<childTime.size(); i++) {
-			ret=Math.max(ret, i+1+childTime.get(i));
+		for(int i=0; i<ct.size(); i++) {
+			ret=Math.max(ret, i+ct.get(i)+1);
 		}
+
 		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
-	void init(int V, int[] edge) {
-		this.V=V;
+	void init(int n, int[] rel) {
+		this.V=n;
 		this.adj=new ArrayList[V];
 		for(int i=0; i<V; i++) adj[i]=new ArrayList<>();
-		for(int i=0; i<V; i++) {
-			if(edge[i]==-1) continue;
-			adj[edge[i]].add(i);
+		for(int i=1; i<n; i++) {
+			adj[rel[i]].add(i);
 		}
 	}
 
