@@ -35,37 +35,39 @@ public class Main {
 
 	List<Integer>[] adj;
 	int V;
-	long[] cost;
 
 	String resolve(int n, int m, int[] rel, int[][] good) {
 		init(n, rel);
 
-		for(int[] g: good) cost[g[0]-1]+=g[1];
+		long[] dp=new long[V];
+		for(int[] g: good) dp[g[0]-1]+=g[1];
 
-		fire(0, 0);
-
+		Queue<Integer> q=new ArrayDeque<>();
+		q.add(0);
+		while(!q.isEmpty()) {
+			int cur=q.poll();
+			for(int next: adj[cur]) {
+				q.add(next);
+				dp[next]+=dp[cur];
+			}
+		}
+		
 		StringBuilder sb=new StringBuilder();
 		for(int i=0; i<V; i++) {
 			if(i!=0) sb.append(" ");
-			sb.append(cost[i]);
+			sb.append(dp[i]);
 		}
 
 		return sb.toString();
 	}
 
-	void fire(int cur, long acc) {
-		cost[cur]+=acc;
-		for(int next: adj[cur]) {
-			fire(next, cost[cur]);
-		}
-	}
+	
 
 	@SuppressWarnings("unchecked")
 	void init(int v, int[] rel) {
 		this.V=v;
 		this.adj=new ArrayList[V];
 		for(int i=0; i<V; i++) adj[i]=new ArrayList<>();
-		this.cost=new long[V];
 		for(int i=1; i<V; i++) {
 			adj[rel[i]-1].add(i);
 		}
