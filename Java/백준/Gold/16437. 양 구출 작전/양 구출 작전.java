@@ -31,34 +31,42 @@ public class Main {
 		}
 	}
 
-	int[] sheep, wolf;
+	int[] sheep, wolf, ind;
 	int V;
 	List<Integer>[] adj;
 	long resolve(int n, int[] sheep, int[] wolf, int[] rel) {
 		this.sheep=sheep; this.wolf=wolf;
 		init(n+1, rel);
-		return find(1);
-	}
 
-	long find(int cur) {
-		long restSheep=sheep[cur];
-		for(int next: adj[cur]) {
-			restSheep+=find(next);
+		long[] rest=new long[V];
+		Queue<Integer> q=new ArrayDeque<>();
+		for(int i=2; i<V; i++) if(ind[i]==0) q.add(i);
+		while(!q.isEmpty()) {
+			int cur=q.poll();
+
+			rest[cur]+=sheep[cur];
+			int wolfTmp=(int)Math.max(0, wolf[cur]-rest[cur]);
+			rest[cur]=Math.max(0, rest[cur]-wolf[cur]);
+			wolf[cur]=(int) wolfTmp;
+
+			for(int next: adj[cur]) {
+				if(--ind[next]==0) q.add(next);
+				rest[next]+=rest[cur];
+			}
 		}
-
-		int curWolf=wolf[cur];
-
-		return Math.max(0L, restSheep-curWolf);
+		return rest[1];
 	}
+
 
 	@SuppressWarnings("unchecked")
 	void init(int v, int[] rel) {
 		this.V=v;
 		this.adj=new ArrayList[V];
 		for(int i=1; i<V; i++) adj[i]=new ArrayList<>();
-
+		this.ind=new int[V];
 		for(int i=2; i<rel.length; i++) {
-			adj[rel[i]].add(i);
+			adj[i].add(rel[i]);
+			ind[rel[i]]++;
 		}
 	}
 
