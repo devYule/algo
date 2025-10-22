@@ -30,42 +30,40 @@ public class Main {
 	}
 
 	List<Integer>[] adj;
-	int V;
+	int V, p[], memo[][];
+	boolean[] vis;
 
 	int resolve(int n, int[] p, int[][] edge) {
 		init(n, edge);
+		this.p=p;
+		this.vis=new boolean[V];
+		this.memo=new int[n][2];
 
-		int[] parent=new int[V];
-		Arrays.fill(parent, -1);
-		List<Integer> order=new ArrayList<>();
-		int root=0;
-		parent[root]=0;
-		Queue<Integer> q=new ArrayDeque<>();
-		q.add(root);
+		for(int i=0; i<V; i++) Arrays.fill(memo[i], -1);
+		return find(0, 0);
+	}
 
-		while(!q.isEmpty()) {
-			int cur=q.poll();
-			order.add(cur);
-			for(int next: adj[cur]) {
-				if(parent[next]!=-1) continue;
-				parent[next]=cur;
-				q.add(next);
-			}
+	int find(int cur, int parentState) {
+		if(memo[cur][parentState]!=-1) return memo[cur][parentState];
+
+		vis[cur]=true;
+
+		int off=0;
+		for(int next: adj[cur]) {
+			if(vis[next]) continue;
+			off+=find(next, 0);
 		}
 
-		Collections.reverse(order);
-
-		int[] dp0=new int[V];
-		int[] dp1=new int[V];
-		for(int cur: order) {
-			dp1[cur]=p[cur];
+		int on=0;
+		if(parentState==0) {
+			on=p[cur];
 			for(int next: adj[cur]) {
-				if(next==parent[cur]) continue;
-				dp1[cur]+=dp0[next];
-				dp0[cur]+=Math.max(dp0[next], dp1[next]);
+				if(vis[next]) continue;
+				on+=find(next, 1);
 			}
 		}
-		return Math.max(dp0[root], dp1[root]);
+		vis[cur]=false;
+		return memo[cur][parentState]=Math.max(on, off);
 	}
 
 	@SuppressWarnings("unchecked")
