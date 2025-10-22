@@ -30,41 +30,27 @@ public class Main {
 	}
 
 	List<Integer>[] adj;
-	int V;
-
+	int V, d, s, ret;
 
 	int resolve(int n, int s, int d, int[][] edge) {
 		n++;
 		init(n, edge);
+		this.d=d;
+		this.s=s;
+		find(s, -1);
+		return ret;
+	}
 
-		List<Integer> order=new ArrayList<>();
-		Queue<Integer> q=new ArrayDeque<>();
-		int[] parent=new int[n];
-		q.add(s);
-		parent[s]=s;
-		int[] ch=new int[V];
-		Arrays.fill(ch, (int)1e9);
-		while(!q.isEmpty()) {
-			int cur=q.poll();
-			order.add(cur);
-			if(cur!=s && adj[cur].size()==1) ch[cur]=d;
-			for(int next: adj[cur]) {
-				if(parent[next]!=0) continue;
-				parent[next]=cur;
-				q.add(next);
-			}
+	int find(int cur, int parent) {
+		int h=0;
+		for(int next: adj[cur]) {
+			if(next==parent) continue;
+			h=Math.max(h, find(next, cur));
 		}
 
-		Collections.reverse(order);
-		int[] dist=new int[V];
-		for(int cur: order) {
-			for(int par: adj[cur]) {
-				if(par!=parent[cur]) continue;
-				ch[par]=Math.min(ch[par], ch[cur]==0 ? 0 : ch[cur]-1);
-				dist[par]+=dist[cur]+(ch[cur]==0 ? 2 : 0);
-			}
-		}
-		return dist[s];
+		if(cur!=s && h>=d) ret+=2;
+
+		return h+1;
 	}
 
 
