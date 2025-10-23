@@ -25,33 +25,48 @@ public class Main {
 	}
 
 	List<Integer>[] adj;
-	int V, memo[][];
+	int V;
 
 	int resolve(int n, int[][] edge) {
 		n++;
 		int start=init(n, edge);
-		this.memo=new int[n][2];
+		int[][] memo=new int[n][2];
 		for(int i=0; i<n; i++) Arrays.fill(memo[i], -1);
 
-		return Math.min(find(start, 0, -1), find(start, 1, -1));
-	}
+		Queue<Integer> q=new ArrayDeque<>();
+		int[] parent=new int[V];
+		int[] order=new int[V];
+		q.add(start);
+		parent[start]=start;
+		int oi=0;
+		while(!q.isEmpty()) {
+			int cur=q.poll();
+			order[oi++]=cur;
 
-	int find(int cur, int cs, int parent) {
-		if(memo[cur][cs]!=-1) return memo[cur][cs];
-
-		int ret=0;
-
-		for(int next: adj[cur]) {
-			if(next==parent) continue;
-			if(cs==0) {
-				ret+=find(next, 1, cur);
-			} else {
-				ret+=Math.min(find(next, 0, cur), find(next, 1, cur));
+			for(int next: adj[cur]) {
+				if(parent[next]!=0) continue;
+				parent[next]=cur;
+				q.add(next);
 			}
 		}
 
-		return memo[cur][cs]=ret+cs;
+		for(int i=oi-1; i>=0; i--) {
+			int cur=order[i];
+
+			int curOn=1;
+			int curOff=0;
+			for(int next: adj[cur]) {
+				if(parent[cur]==next) continue;
+				curOff+=memo[next][1];
+				curOn+=Math.min(memo[next][0], memo[next][1]);
+			}
+			memo[cur][1]=curOn;
+			memo[cur][0]=curOff;
+		}
+
+		return Math.min(memo[start][0], memo[start][1]);
 	}
+
 
 	@SuppressWarnings("unchecked")
 	int init(int v, int[][] edge) {
