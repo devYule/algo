@@ -6,6 +6,7 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
+
 			int[][] map=new int[n][n];
 			for(int i=0; i<n; i++) {
 				StringTokenizer st=new StringTokenizer(br.readLine());
@@ -32,8 +33,9 @@ public class Main {
 			for(int j=0; j<n; j++) {
 				int jump=map[i][j];
 				if(jump==0) continue;
-				if(i+jump<n) dp[i+jump][j]+=dp[i][j];
-				if(j+jump<n) dp[i][j+jump]+=dp[i][j];
+				long add=dp[i][j];
+				if(i+jump<n) dp[i+jump][j]+=add;
+				if(j+jump<n) dp[i][j+jump]+=add;
 			}
 		}
 		return dp[n-1][n-1];
