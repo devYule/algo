@@ -6,20 +6,22 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			StringTokenizer st=new StringTokenizer(br.readLine());
+
 			int n=Integer.parseInt(st.nextToken());
 			int m=Integer.parseInt(st.nextToken());
-			int[][] map=new int[n][m];
+
+			int[][] cost=new int[n][m];
 			for(int i=0; i<n; i++) {
 				st=new StringTokenizer(br.readLine());
 				for(int j=0; j<m; j++) {
-					map[i][j]=Integer.parseInt(st.nextToken());
+					cost[i][j]=Integer.parseInt(st.nextToken());
 				}
 			}
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, m, map
+						n, m, cost
 					)
 				)
 			);
@@ -27,22 +29,23 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int m, int[][] map) {
+	int resolve(int n, int m, int[][] cost) {
 		int[][] dp=new int[m][3];
-		for(int i=0; i<m; i++) Arrays.fill(dp[i], map[0][i]);
+
+		for(int i=0; i<m; i++) {
+			for(int j=0; j<3; j++) {
+				dp[i][j]=cost[0][i];
+			}
+		}
 
 		for(int i=1; i<n; i++) {
 			int[][] newDp=new int[m][3];
+			for(int j=0; j<m; j++) Arrays.fill(newDp[j], (int)1e9);
+
 			for(int j=0; j<m; j++) {
-				int cur=map[i][j];
-				for(int k=-1; k<=1; k++) {
-					newDp[j][k+1]=(int)1e9;
-					if(j+k<0 || j+k>=m) continue;
-					for(int l=-1; l<=1; l++) {
-						if(k==l || j+k+l<0 || j+k+l>=m) continue;
-						newDp[j][k+1]=Math.min(newDp[j][k+1], dp[j+k][l+1]+cur);
-					}
-				}
+				if(j!=0) newDp[j][0]=Math.min(dp[j-1][1], dp[j-1][2])+cost[i][j];
+				newDp[j][1]=Math.min(dp[j][0], dp[j][2])+cost[i][j];
+				if(j!=m-1) newDp[j][2]=Math.min(dp[j+1][0], dp[j+1][1])+cost[i][j];
 			}
 			dp=newDp;
 		}
