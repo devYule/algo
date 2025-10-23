@@ -5,11 +5,15 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
+			int n=Integer.parseInt(br.readLine());
+			int[] nums=new int[n];
+			StringTokenizer st=new StringTokenizer(br.readLine());
+			for(int i=0; i<n; i++) nums[i]=Integer.parseInt(st.nextToken());
+
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						Integer.parseInt(br.readLine()),
-						Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray()
+						n, nums
 					)
 				)
 			);
@@ -17,18 +21,18 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int[] arr) {
-		int[] dp=new int[n+1];
-		int ret=0;
-		for(int i=1; i<=n; i++) {
-			int cur=arr[i-1];
-			dp[i]=cur;
-			for(int j=0; j<i-1; j++) {
-				if(arr[j]<cur) dp[i]=Math.max(dp[i], dp[j+1]+cur);
+	int resolve(int n, int[] nums) {
+		int[] dp=new int[n];
+		for(int i=0; i<n; i++) dp[i]=nums[i];
+
+		for(int i=1; i<n; i++) {
+			for(int j=0; j<i; j++) {
+				if(nums[i]>nums[j]) {
+					dp[i]=Math.max(dp[i], dp[j]+nums[i]);
+				}
 			}
-			ret=Math.max(ret, dp[i]);
 		}
-		return ret;
+		return Arrays.stream(dp).max().orElse(0);
 	}
 
 }
