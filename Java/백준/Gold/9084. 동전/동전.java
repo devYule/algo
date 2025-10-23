@@ -5,16 +5,26 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-			int round=Integer.parseInt(br.readLine());
+			int T=Integer.parseInt(br.readLine());
 
-			for(int i=0; i<round; i++) {
-				if(i!=0) bw.write("\n");
+			for(int r=0; r<T; r++) {
+				if(r!=0) bw.write("\n");
+
+				int n=Integer.parseInt(br.readLine());
+
+				int[] coin=new int[n];
+				StringTokenizer st=new StringTokenizer(br.readLine());
+				for(int i=0; i<n; i++) {
+					coin[i]=Integer.parseInt(st.nextToken());
+				}
+
+				int target=Integer.parseInt(br.readLine());
+
+
 				bw.write(
 					String.valueOf(
 						new Main().resolve(
-							Integer.parseInt(br.readLine()),
-							Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray(),
-							Integer.parseInt(br.readLine())
+							n, coin, target
 						)
 					)
 				);
