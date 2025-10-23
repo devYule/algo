@@ -24,8 +24,7 @@ public class Main {
 		}
 	}
 
-	List<Integer>[] adj;
-	int V;
+	int V, first[], nxt[], node[], eni;
 
 	int resolve(int n, int[][] edge) {
 		n++;
@@ -43,7 +42,8 @@ public class Main {
 			int cur=q.poll();
 			order[oi++]=cur;
 
-			for(int next: adj[cur]) {
+			for(int ni=first[cur]; ni!=-1; ni=nxt[ni]) {
+				int next=node[ni];
 				if(parent[next]!=0) continue;
 				parent[next]=cur;
 				q.add(next);
@@ -55,7 +55,9 @@ public class Main {
 
 			int curOn=1;
 			int curOff=0;
-			for(int next: adj[cur]) {
+
+			for(int ni=first[cur]; ni!=-1; ni=nxt[ni]) {
+				int next=node[ni];
 				if(parent[cur]==next) continue;
 				curOff+=memo[next][1];
 				curOn+=Math.min(memo[next][0], memo[next][1]);
@@ -68,15 +70,26 @@ public class Main {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	int init(int v, int[][] edge) {
 		this.V=v;
-		this.adj=new ArrayList[V];
+
+		this.first=new int[v];
+		Arrays.fill(first, -1);
+		int m=edge.length;
+		this.nxt=new int[m*2];
+		this.node=new int[m*2];
+		this.eni=0;
+
 		int[] ind=new int[V];
-		for(int i=1; i<V; i++) adj[i]=new ArrayList<>();
 		for(int[] e: edge) {
-			adj[e[0]].add(e[1]);
-			adj[e[1]].add(e[0]);
+			node[eni]=e[1];
+			nxt[eni]=first[e[0]];
+			first[e[0]]=eni++;
+
+			node[eni]=e[0];
+			nxt[eni]=first[e[1]];
+			first[e[1]]=eni++;
+
 			ind[e[0]]++; ind[e[1]]++;
 		}
 
