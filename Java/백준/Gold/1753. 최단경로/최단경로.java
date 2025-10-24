@@ -35,21 +35,24 @@ public class Main {
 		v++;
 		init(v, edge);
 
-		final int[] dist=new int[v];
+		int[] dist=new int[v];
 		Arrays.fill(dist, (int)1e9);
-		PriorityQueue<Integer> q=new PriorityQueue<>((a, b)->dist[a]-dist[b]);
-		q.add(start);
+		PriorityQueue<int[]> q=new PriorityQueue<>((a, b)->a[1]-b[1]);
+		q.add(new int[] {start, 0});
 		dist[start]=0;
 		while(!q.isEmpty()) {
-			int cur=q.poll();
-			int cost=dist[cur];
+			int[] curs=q.poll();
+			int cur=curs[0];
+			int cost=curs[1];
+
+			if(dist[cur]<cost) continue;
 
 			for(int i=head[cur]; i!=-1; i=nxt[i]) {
 				int next=map[i];
 				int nextDist=cost+wt[i];
 				if(dist[next]>nextDist) {
 					dist[next]=nextDist;
-					q.add(next);
+					q.add(new int[] {next, nextDist});
 				}
 			}
 		}
