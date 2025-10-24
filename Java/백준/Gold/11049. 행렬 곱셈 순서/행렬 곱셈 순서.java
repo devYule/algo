@@ -6,17 +6,18 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
-			int[][] met=new int[n][2];
+
+			int[][] sq=new int[n][2];
 			for(int i=0; i<n; i++) {
 				StringTokenizer st=new StringTokenizer(br.readLine());
-				met[i][0]=Integer.parseInt(st.nextToken());
-				met[i][1]=Integer.parseInt(st.nextToken());
+				sq[i][0]=Integer.parseInt(st.nextToken());
+				sq[i][1]=Integer.parseInt(st.nextToken());
 			}
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, met
+						n, sq
 					)
 				)
 			);
@@ -24,25 +25,16 @@ public class Main {
 		}
 	}
 
-	int resolve(int n, int[][] metrix) {
+	int resolve(int n, int[][] sq) {
 		int[][] dp=new int[n][n];
-		for(int i=0; i<n; i++) {
-			for(int j=0; j<n; j++) {
-				if(i==j) continue;
-				dp[i][j]=(int)1e9;
-			}
-		}
 
-		for(int gap=1; gap<n; gap++) {
-			for(int left=0; left+gap<n; left++) {
-				int right=left+gap;
-				for(int cut=left; cut<right; cut++) {
-					dp[left][right]=Math.min(
-						dp[left][right],
-						dp[left][cut]+dp[cut+1][right]+(
-								metrix[left][0]*metrix[cut][1]*metrix[right][1]
-						)
-					);
+		for(int l=1; l<n; l++) {
+			for(int i=0; i+l<n; i++) {
+				int lo=i;
+				int hi=i+l;
+				dp[lo][hi]=(int)1e9;
+				for(int j=lo; j<hi; j++) {
+					dp[lo][hi]=Math.min(dp[lo][hi], dp[lo][j]+dp[j+1][hi]+(sq[lo][0]*sq[j][1]*sq[hi][1]));
 				}
 			}
 		}
