@@ -45,6 +45,8 @@ public class Main {
 			int cur=curs[1];
 			int cost=curs[0];
 
+			if(dist[cur].size()==k && dist[cur].peek()<cost) continue;
+
 			for(int i=head[cur]; i!=-1; i=nxt[i]) {
 				int next=to[i];
 				int nextDist=cost+wt[i];
