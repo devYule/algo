@@ -34,6 +34,7 @@ public class Main {
 
 
 	String resolve(int n, int m, int k, long[] nums, long[][] query) {
+		n++;
 		Fenwick fw=new Fenwick(n);
 		for(int i=0; i<nums.length; i++) fw.add(i+1, nums[i]);
 
@@ -59,10 +60,12 @@ public class Main {
 		}
 
 		void add(int i, long value) {
+			i++;
 			for(; i<=n; i+=i&-i) tree[i]+=value;
 		}
 
 		long prefix(int i) {
+			i++;
 			long ret=0;
 			for(; i>0; i-=i&-i) ret+=tree[i];
 			return ret;
