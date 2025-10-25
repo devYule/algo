@@ -40,63 +40,44 @@ public class Main {
 	}
 
 	String resolve(int n, int m, int[] nums, int[][] query) {
-		Segment seg=new Segment(nums);
+		Fenwick fw=new Fenwick(n);
+
+		for(int i=1; i<=n; i++) {
+			fw.add(i, nums[i-1]);
+			if(i+1<=n) fw.add(i+1, -nums[i-1]);
+		}
 
 		List<Long> ret=new ArrayList<>();
 		for(int[] q: query) {
 			if(q[0]==1) {
-				seg.update(q[1]-1, q[2]-1, q[3]);
+				int from=q[1];
+				int to=q[2];
+				int value=q[3];
+				fw.add(from, value);
+				if(to+1<=n) fw.add(to+1, -value);
 			} else {
-				ret.add(seg.get(q[1]-1));
+				int idx=q[1];
+				ret.add(fw.get(idx));
 			}
 		}
 		return ret.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining("\n"));
 	}
 
-	static class Segment {
-		long[] lazy;
-		int[] o;
+	static class Fenwick {
+		long[] tree;
 		int n;
-		Segment(int[] o) {
-			this.o=o;
-			this.n=o.length;
-			int tl=0;
-			int p=0;
-			while(true) {
-				int pow=(int)Math.pow(2, p);
-				tl+=n;
-				if(pow>n) break;
-				p++;
-			}
-			this.lazy=new long[tl];
+		Fenwick(int n) {
+			this.n=n;
+			tree=new long[n+1];
 		}
 
-		void update(int l, int r, int value) {
-			update(l, r, value, 0, n-1, 1);
+		void add(int i, int value) {
+			for(; i<=n; i+=i&-i) tree[i]+=value;
 		}
-
-		void update(int bl, int br, int value, int l, int r, int nd) {
-			if(r<bl || l>br) return;
-			if(l>=bl && r<=br) {
-				lazy[nd]+=value;
-				return;
-			}
-
-			int mid=(l+r)>>>1;
-			update(bl, br, value, l, mid, nd*2);
-			update(bl, br, value, mid+1, r, nd*2+1);
-		}
-
-		long get(int idx) {
-			return get(idx, 0, n-1, 1, 0L);
-		}
-
-		long get(int idx, int l, int r, int nd, long acc) {
-			acc+=lazy[nd];
-			if(l==r) return o[idx]+acc;
-			int mid=(l+r)>>>1;
-			if(idx<=mid) return get(idx, l, mid, nd*2, acc);
-			else return get(idx, mid+1, r, nd*2+1, acc);
+		long get(int i) {
+			long ret=0;
+			for(; i>0; i-=i&-i) ret+=tree[i];
+			return ret;
 		}
 	}
 
