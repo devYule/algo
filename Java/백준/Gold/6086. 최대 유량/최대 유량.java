@@ -124,9 +124,11 @@ public class Main {
 			int ret=0;
 			while(bfs(s, t)) {
 				System.arraycopy(head, 0, tmpHead, 0, head.length);
-				int pushed=dfs(s, t, Integer.MAX_VALUE);
-				if(pushed==0) break;
-				ret+=pushed;
+                while(true) {
+		    		int pushed=dfs(s, t, Integer.MAX_VALUE);
+	    			if(pushed==0) break;
+    				ret+=pushed;
+                }
 			}
 			return ret;
 		}
