@@ -37,7 +37,7 @@ public class Main {
 	String resolve(int n, int r, int q, int[][] edge, int[] Q) {
 		init(n, edge);
 
-		dfs(r, -1);
+		dfs(r);
 
 		StringBuilder sb=new StringBuilder();
 		for(int i=0; i<q; i++) {
@@ -47,16 +47,42 @@ public class Main {
 		return sb.toString();
 	}
 
-	int dfs(int a, int parent) {
-		if(memo[a]!=-1) return memo[a];
+	void dfs(int s) {
+		int[] parent=new int[n+1];
+		int[] order=new int[n+1];
+		int oi=0;
 
-		int ret=1;
-		for(int i=head[a]; i!=-1; i=nxt[i]) {
-			int b=to[i];
-			if(b==parent) continue;
-			ret+=dfs(b, a);
+		Queue<Integer> q=new ArrayDeque<>();
+
+		q.add(s);
+		parent[s]=s;
+
+		while(!q.isEmpty()) {
+			int a=q.poll();
+			order[oi++]=a;
+
+			for(int i=head[a]; i!=-1; i=nxt[i]) {
+				int b=to[i];
+				if(parent[b]==0) {
+					parent[b]=a;
+					q.add(b);
+				}
+			}
 		}
-		return memo[a]=ret;
+
+		for(int i=oi-1; i>=0; i--) {
+			int a=order[i];
+
+			int cnt=1;
+			for(int ni=head[a]; ni!=-1; ni=nxt[ni]) {
+				int b=to[ni];
+				if(b==parent[a]) continue;
+
+				cnt+=memo[b];
+			}
+			memo[a]=cnt;
+		}
+
 	}
 
 	void init(int n, int[][] edge) {
