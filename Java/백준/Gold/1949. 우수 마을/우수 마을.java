@@ -6,10 +6,12 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
-			int[] p=new int[n];
-			StringTokenizer st=new StringTokenizer(br.readLine());
 
-			for(int i=0; i<n; i++) p[i]=Integer.parseInt(st.nextToken());
+			int[] pp=new int[n];
+			StringTokenizer st=new StringTokenizer(br.readLine());
+			for(int i=0; i<n; i++) {
+				pp[i]=Integer.parseInt(st.nextToken());
+			}
 
 			int[][] edge=new int[n-1][2];
 			for(int i=0; i<n-1; i++) {
@@ -21,7 +23,7 @@ public class Main {
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, p, edge
+						n, pp, edge
 					)
 				)
 			);
@@ -29,51 +31,54 @@ public class Main {
 		}
 	}
 
-	List<Integer>[] adj;
-	int V, p[], memo[][];
-	boolean[] vis;
+	int head[], nxt[], to[], ei;
+	int n, memo[][], pp[];
 
-	int resolve(int n, int[] p, int[][] edge) {
+	int resolve(int n, int[] pp, int[][] edge) {
+		this.pp=pp;
 		init(n, edge);
-		this.p=p;
-		this.vis=new boolean[V];
-		this.memo=new int[n][2];
 
-		for(int i=0; i<V; i++) Arrays.fill(memo[i], -1);
-		return find(0, 0);
+		return Math.max(dfs(1, 0, -1), dfs(1, 1, -1));
 	}
 
-	int find(int cur, int parentState) {
-		if(memo[cur][parentState]!=-1) return memo[cur][parentState];
 
-		vis[cur]=true;
+	int dfs(int a, int cs, int parent) {
+		if(memo[a][cs]!=-1) return memo[a][cs];
 
-		int off=0;
-		for(int next: adj[cur]) {
-			if(vis[next]) continue;
-			off+=find(next, 0);
+		int ret=cs==1 ? pp[a-1] : 0;
+		for(int i=head[a]; i!=-1; i=nxt[i]) {
+			int b=to[i];
+			if(b==parent) continue;
+			if(cs==1) ret+=dfs(b, 0, a);
+			else ret+=Math.max(dfs(b, 0, a), dfs(b, 1, a));
 		}
-
-		int on=0;
-		if(parentState==0) {
-			on=p[cur];
-			for(int next: adj[cur]) {
-				if(vis[next]) continue;
-				on+=find(next, 1);
-			}
-		}
-		vis[cur]=false;
-		return memo[cur][parentState]=Math.max(on, off);
+		return memo[a][cs]=ret;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	void init(int n, int[][] edge) {
-		this.V=n;
-		this.adj=new ArrayList[V];
-		for(int i=0; i<n; i++) adj[i]=new ArrayList<>();
+		this.n=n;
+		int E=edge.length;
+
+		this.head=new int[n+1];
+		Arrays.fill(head, -1);
+		this.nxt=new int[E*2];
+		this.to=new int[E*2];
+		this.ei=0;
+
+		this.memo=new int[n+1][2];
+		for(int i=1; i<=n; i++) Arrays.fill(memo[i], -1);
+
 		for(int[] e: edge) {
-			adj[e[0]-1].add(e[1]-1);
-			adj[e[1]-1].add(e[0]-1);
+			int a=e[0], b=e[1];
+
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
+
+			to[ei]=a;
+			nxt[ei]=head[b];
+			head[b]=ei++;
 		}
 	}
 
