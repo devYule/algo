@@ -6,12 +6,17 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
+
 			List<int[]> edge=new ArrayList<>();
 			for(int i=0; i<n; i++) {
-				String[] info=br.readLine().split("\\s");
-				for(int j=1; j<info.length; j+=2) {
-					if("-1".equals(info[j])) break;
-					edge.add(new int[] {Integer.parseInt(info[0]), Integer.parseInt(info[j]), Integer.parseInt(info[j+1])});
+				StringTokenizer st=new StringTokenizer(br.readLine());
+
+				int base=Integer.parseInt(st.nextToken());
+				while(true) {
+					int b=Integer.parseInt(st.nextToken());
+					if(b==-1) break;
+					int d=Integer.parseInt(st.nextToken());
+					edge.add(new int[] {base, b, d});
 				}
 			}
 
@@ -26,39 +31,69 @@ public class Main {
 		}
 	}
 
-	List<int[]>[] adj;
-	int V;
-	long ret;
-	long resolve(int n, List<int[]> edges) {
-		init(n+1, edges);
-		dfs(1, -1);
+	int head[], nxt[], to[], wt[], ei;
+	int n;
+
+	int resolve(int n, List<int[]> edge) {
+		init(n, edge);
+
+		int start=bfs(1)[1];
+		return bfs(start)[0];
+	}
+
+	int[] bfs(int s) {
+		int[] dist=new int[n+1];
+		Arrays.fill(dist, -1);
+
+		Queue<Integer> q=new ArrayDeque<>();
+
+		q.add(s);
+		dist[s]=0;
+
+		while(!q.isEmpty()) {
+			int a=q.poll();
+			for(int i=head[a]; i!=-1; i=nxt[i]) {
+				int b=to[i];
+				if(dist[b]==-1) {
+					dist[b]=wt[i]+dist[a];
+					q.add(b);
+				}
+			}
+		}
+		int[] ret=new int[2];
+		for(int i=1; i<=n; i++) {
+			if(ret[0]<dist[i]) {
+				ret[0]=dist[i];
+				ret[1]=i;
+			}
+		}
 		return ret;
 	}
 
-	long dfs(int cur, int parent) {
-		long amax=0;
-		long bmax=0;
-		for(int[] nexts: adj[cur]) {
-			if(nexts[1]==parent) continue;
-			long sub=dfs(nexts[1], cur)+nexts[0];
-			if(sub>amax) {
-				bmax=amax;
-				amax=sub;
-			} else if(sub>bmax) {
-				bmax=sub;
-			}
-		}
-		ret=Math.max(ret, amax+bmax);
-		return amax;
-	}
+	void init(int n, List<int[]> edge) {
+		this.n=n;
+		int E=edge.size();
 
-	@SuppressWarnings("unchecked")
-	void init(int V, List<int[]> edges) {
-		this.adj=new ArrayList[V];
-		this.V=V;
-		for(int i=1; i<V; i++) adj[i]=new ArrayList<>();
-		for(int[] e: edges) {
-			adj[e[0]].add(new int[] {e[2], e[1]});
+		this.head=new int[n+1];
+		Arrays.fill(head, -1);
+
+		this.nxt=new int[E*2];
+		this.to=new int[E*2];
+		this.wt=new int[E*2];
+		this.ei=0;
+
+		for(int[] e: edge) {
+			int a=e[0], b=e[1], d=e[2];
+
+			wt[ei]=d;
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
+
+			wt[ei]=d;
+			to[ei]=a;
+			nxt[ei]=head[b];
+			head[b]=ei++;
 		}
 	}
 
