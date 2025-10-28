@@ -7,8 +7,8 @@ public class Main {
 
 			StringTokenizer st=new StringTokenizer(br.readLine());
 			int n=Integer.parseInt(st.nextToken());
-			int root=Integer.parseInt(st.nextToken());
-			int qcnt=Integer.parseInt(st.nextToken());
+			int r=Integer.parseInt(st.nextToken());
+			int q=Integer.parseInt(st.nextToken());
 
 			int[][] edge=new int[n-1][2];
 			for(int i=0; i<n-1; i++) {
@@ -17,15 +17,13 @@ public class Main {
 				edge[i][1]=Integer.parseInt(st.nextToken());
 			}
 
-			int[] Q=new int[qcnt];
-			for(int i=0; i<qcnt; i++) {
-				Q[i]=Integer.parseInt(br.readLine());
-			}
+			int[] Q=new int[q];
+			for(int i=0; i<q; i++) Q[i]=Integer.parseInt(br.readLine());
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, root, qcnt, edge, Q
+						n, r, q, edge, Q
 					)
 				)
 			);
@@ -33,45 +31,57 @@ public class Main {
 		}
 	}
 
-	List<Integer>[] adj;
-	int V, subsize[];
+	int head[], nxt[], to[], ei;
+	int n, memo[];
 
-
-	String resolve(int n, int root, int qcnt, int[][] edge, int[] Q) {
+	String resolve(int n, int r, int q, int[][] edge, int[] Q) {
 		init(n, edge);
-		this.subsize=new int[V];
 
-		find(root-1, new boolean[V]);
+		dfs(r, -1);
 
 		StringBuilder sb=new StringBuilder();
-		for(int i=0; i<qcnt; i++) {
+		for(int i=0; i<q; i++) {
 			if(i!=0) sb.append("\n");
-			sb.append(subsize[Q[i]-1]);
+			sb.append(memo[Q[i]]);
 		}
 		return sb.toString();
 	}
-	
-	int find(int cur, boolean[] vis) {
-		vis[cur]=true;
+
+	int dfs(int a, int parent) {
+		if(memo[a]!=-1) return memo[a];
 
 		int ret=1;
-		for(int next: adj[cur]) {
-			if(vis[next]) continue;
-			ret+=find(next, vis);
+		for(int i=head[a]; i!=-1; i=nxt[i]) {
+			int b=to[i];
+			if(b==parent) continue;
+			ret+=dfs(b, a);
 		}
-
-		return subsize[cur]=ret;
+		return memo[a]=ret;
 	}
 
-	@SuppressWarnings("unchecked")
-	void init(int v, int[][] edge) {
-		this.V=v;
-		this.adj=new ArrayList[V];
-		for(int i=0; i<v; i++) adj[i]=new ArrayList<>();
+	void init(int n, int[][] edge) {
+		this.n=n;
+		int E=edge.length;
+		this.head=new int[n+1];
+		Arrays.fill(head, -1);
+
+		this.nxt=new int[E*2];
+		this.to=new int[E*2];
+		this.ei=0;
+
+		this.memo=new int[n+1];
+		Arrays.fill(memo, -1);
+
 		for(int[] e: edge) {
-			int a=e[0]-1, b=e[1]-1;
-			adj[a].add(b);
-			adj[b].add(a);
+			int a=e[0], b=e[1];
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
+
+			to[ei]=a;
+			nxt[ei]=head[b];
+			head[b]=ei++;
 		}
 	}
+
 }
