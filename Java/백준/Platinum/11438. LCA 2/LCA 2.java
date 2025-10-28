@@ -45,18 +45,19 @@ public class Main {
 		flat(1, 1, -1);
 
 		Segment seg=new Segment(flat, depth);
-		List<Integer> ret=new ArrayList<>();
-		for(int[] q: Q) {
-			int a=node2flat[q[0]];
-			int b=node2flat[q[1]];
+		StringBuilder sb=new StringBuilder();
+		for(int i=0; i<Q.length; i++) {
+			if(i!=0) sb.append("\n");
+			int a=node2flat[Q[i][0]];
+			int b=node2flat[Q[i][1]];
 			if(a>b) {
 				int tmp=a;
 				a=b;
 				b=tmp;
 			}
-			ret.add(flat.get(seg.query(a, b)));
+			sb.append(String.valueOf(flat.get(seg.query(a, b))));
 		}
-		return ret.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining("\n"));
+		return sb.toString();
 	}
 
 	static class Segment {
@@ -142,7 +143,4 @@ public class Main {
 			head[b]=ei++;
 		}
 	}
-
-
-
 }
