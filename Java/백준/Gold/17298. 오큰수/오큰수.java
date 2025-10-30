@@ -22,14 +22,13 @@ public class Main {
 	}
 
 	String resolve(int n, int[] nums) {
-		Stack<int[]> st=new Stack<>();
+		Stack<Integer> st=new Stack<>();
 		int[] ret=new int[n];
 		Arrays.fill(ret, -1);
 
 		for(int i=0; i<n; i++) {
-			int ri=i-1;
-			while(!st.isEmpty() && st.peek()[1]<nums[i]) ret[st.pop()[0]]=nums[i];
-			st.add(new int[] {i, nums[i]});
+			while(!st.isEmpty() && nums[st.peek()]<nums[i]) ret[st.pop()]=nums[i];
+			st.add(i);
 		}
 		StringBuilder sb=new StringBuilder();
 		for(int i=0; i<n; i++) {
