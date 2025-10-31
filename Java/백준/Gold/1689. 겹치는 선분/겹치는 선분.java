@@ -26,16 +26,21 @@ public class Main {
 	}
 
 	int resolve(int n, int[][] p) {
-		Arrays.sort(p, (a, b) -> a[0]==b[0] ? a[1]-b[1] : a[0]-b[0]);
-
-		PriorityQueue<Integer> q=new PriorityQueue<>();
-		int ret=1;
-		for(int i=0; i<n; i++) {
-			int[] c=p[i];
-			while(!q.isEmpty() && q.peek()<=c[0]) q.poll();
-			q.add(c[1]);
-			ret=Math.max(ret, q.size());
+		List<int[]> evt=new ArrayList<>();
+		for(int[] c: p) {
+			evt.add(new int[] {c[0], 1});
+			evt.add(new int[] {c[1], -1});
 		}
+
+		evt.sort((a, b) -> a[0]==b[0] ? a[1]-b[1] : a[0]-b[0]);
+
+		int ret=0;
+		int cnt=0;
+		for(int[] e: evt) {
+			cnt+=e[1];
+			ret=Math.max(ret, cnt);
+		}
+
 		return ret;
 	}
 }
