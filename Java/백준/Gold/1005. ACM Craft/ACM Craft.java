@@ -4,63 +4,81 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
-			int R=Integer.parseInt(br.readLine());
-			for(int i=0; i<R; i++) {
-				int n=0, k=0;
-				int[] times=null;
-				int[][] edge=null;
-				int target=0;
 
-				String[] split=br.readLine().split("\\s+");
-				n=Integer.parseInt(split[0]); k=Integer.parseInt(split[1]);
-				times=Arrays.stream(br.readLine().split("\\s+"))
-					.mapToInt(s->Integer.parseInt(s))
-					.toArray();
-				edge=new int[k][];
-				for(int j=0; j<k; j++) {
-					edge[j]=Arrays.stream(br.readLine().split("\\s+"))
-						.mapToInt(s->Integer.parseInt(s))
-						.toArray();
+			int round=Integer.parseInt(br.readLine());
+
+			for(int r=0; r<round; r++) {
+
+				StringTokenizer st=new StringTokenizer(br.readLine());
+
+				int n=Integer.parseInt(st.nextToken());
+				int m=Integer.parseInt(st.nextToken());
+
+				int[] times=new int[n];
+				st=new StringTokenizer(br.readLine());
+				for(int i=0; i<n; i++) times[i]=Integer.parseInt(st.nextToken());
+
+				int[][] edge=new int[m][2];
+				for(int i=0; i<m; i++) {
+					st=new StringTokenizer(br.readLine());
+					edge[i][0]=Integer.parseInt(st.nextToken());
+					edge[i][1]=Integer.parseInt(st.nextToken());
 				}
-				target=Integer.parseInt(br.readLine());
-				bw.write(String.valueOf(new Main().resolve(n, k, times, edge, target)));
-				if(i<R-1) bw.write("\n");
+				int target=Integer.parseInt(br.readLine());
+				if(r!=0) bw.write("\n");
+				bw.write(
+					String.valueOf(
+						new Main().resolve(
+							n, m, times, edge, target
+						)
+					)
+				);
 			}
 			bw.flush();
 		}
 	}
 
-	List<Integer>[] adj;
-	int[] in;
-	int V;
-	int resolve(int V, int E, int[] times, int[][] edges, int target) {
-		target--;
-		init(V, edges);
-		if(in[target]==0) return times[target];
-		int ret=0;
-		Queue<Integer> q=new LinkedList<>();
-		int[] buildTime=new int[V];
-		for(int i=0; i<V; i++) if(in[i]==0) { q.add(i); buildTime[i]=times[i]; }
+	int head[], to[], nxt[], ind[];
+
+	int resolve(int n, int m, int[] times, int[][] edge, int target) {
+		init(n, edge);
+
+
+		int[] dist=new int[n+1];
+		ArrayDeque<Integer> q=new ArrayDeque<>();
+		for(int i=1; i<=n; i++) if(ind[i]==0) {
+			q.add(i);
+			dist[i]=times[i-1];
+		}
+
 		while(!q.isEmpty()) {
-			int cur=q.poll();
-			if(cur==target) return buildTime[target];
-			for(int next: adj[cur]) {
-				buildTime[next]=Math.max(buildTime[next], buildTime[cur]+times[next]);
-				if(--in[next]==0) q.add(next);
+			int a=q.removeFirst();
+			for(int i=head[a]; i!=-1; i=nxt[i]) {
+				int b=to[i];
+				dist[b]=Math.max(dist[b], dist[a]+times[b-1]);
+				if(--ind[b]==0) q.add(b);
 			}
 		}
-		return -1;
+		return dist[target];
 	}
 
-	@SuppressWarnings("unchecked")
-	void init(int V, int[][] edge) {
-		this.V=V;
-		this.adj=new ArrayList[V];
-		this.in=new int[V];
-		for(int i=0; i<V; i++) adj[i]=new ArrayList<>();
+	void init(int n, int[][] edge) {
+		this.head=new int[n+1];
+		Arrays.fill(head, -1);
+		int E=edge.length;
+		this.to=new int[E];
+		this.nxt=new int[E];
+		this.ind=new int[n+1];
+
+		int ei=0;
 		for(int[] e: edge) {
-			adj[e[0]-1].add(e[1]-1);
-			in[e[1]-1]++;
+			int a=e[0], b=e[1];
+			ind[b]++;
+
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
 		}
 	}
+
 }
