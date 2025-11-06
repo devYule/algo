@@ -5,13 +5,11 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-
-			int pi=1;
+			int round=1;
 			while(true) {
-				
 				int n=Integer.parseInt(br.readLine());
 				if(n==0) break;
-				if(pi!=1) bw.write("\n");
+				if(round>1) bw.write("\n");
 
 				int[][] map=new int[n][n];
 				for(int i=0; i<n; i++) {
@@ -20,48 +18,51 @@ public class Main {
 						map[i][j]=Integer.parseInt(st.nextToken());
 					}
 				}
-
-				bw.write("Problem "+ pi + ": "+
+				bw.write("Problem " + round + ": " +
 					String.valueOf(
 						new Main().resolve(
 							n, map
 						)
 					)
 				);
-				pi++;
+				round++;
 			}
+
+			
 			bw.flush();
 		}
 	}
 
 	int resolve(int n, int[][] map) {
+		int[] rg={-1, 0, 1, 0};
+		int[] cg={0, 1, 0, -1};
 
-		final int[] rg={-1, 0, 1, 0};
-		final int[] cg={0, 1, 0, -1};
-
-		final int[][] dist=new int[n][n];
+		PriorityQueue<int[]> q=new PriorityQueue<>((a, b) -> a[0]-b[0]);
+		int[][] dist=new int[n][n];
 		for(int i=0; i<n; i++) Arrays.fill(dist[i], (int)1e9);
-		PriorityQueue<int[]> q=new PriorityQueue<>((a, b) -> dist[a[0]][a[1]]-dist[b[0]][b[1]]);
-		q.add(new int[] {0, 0});
 		dist[0][0]=map[0][0];
+		q.add(new int[] {dist[0][0], 0, 0});
+
 		while(!q.isEmpty()) {
 			int[] curs=q.poll();
-			int y=curs[0];
-			int x=curs[1];
-			int cost=dist[y][x];
+			int cy=curs[1];
+			int cx=curs[2];
+			int cost=curs[0];
+
+			if(dist[cy][cx]!=cost) continue;
 
 			for(int i=0; i<4; i++) {
-				int ny=y+rg[i];
-				int nx=x+cg[i];
+				int ny=cy+rg[i];
+				int nx=cx+cg[i];
 				if(ny>=0 && nx>=0 && ny<n && nx<n) {
-					if(dist[ny][nx]>cost+map[ny][nx]) {
-						dist[ny][nx]=cost+map[ny][nx];
-						q.add(new int[] {ny, nx});
+					int nextDist=cost+map[ny][nx];
+					if(dist[ny][nx]>nextDist) {
+						dist[ny][nx]=nextDist;
+						q.add(new int[] {nextDist, ny, nx});
 					}
 				}
 			}
 		}
 		return dist[n-1][n-1];
 	}
-
 }
