@@ -6,10 +6,12 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
-			int[] d=new int[n];
 
+			int[] nums=new int[n];
 			StringTokenizer st=new StringTokenizer(br.readLine());
-			for(int i=0; i<n; i++) d[i]=Integer.parseInt(st.nextToken());
+			for(int i=0; i<n; i++) {
+				nums[i]=Integer.parseInt(st.nextToken());
+			}
 
 			int[][] edge=new int[n-1][2];
 			for(int i=0; i<n-1; i++) {
@@ -21,7 +23,7 @@ public class Main {
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						n, d, edge
+						n, nums, edge
 					)
 				)
 			);
@@ -29,83 +31,98 @@ public class Main {
 		}
 	}
 
-	List<Integer>[] adj;
-	int V, d[], memo[][];
+	int head[], nxt[], to[];
 
-	String resolve(int n, int[] d, int[][] edge) {
-		/*
-					1
-					2
-			 3  4  6
-				  5  7
-		*/
-		this.d=d;
-		this.memo=new int[n][2];
-		for(int i=0; i<n; i++) Arrays.fill(memo[i], -1);
-		int start=init(n, edge);
+	String resolve(int n, int[] nums, int[][] edge) {
+		init(n, edge);
 
-		int p0=find(start, 0, -1);
-		int p1=find(start, 1, -1);
+		int[] parent=new int[n+1];
+		int[] order=new int[n];
+		int oi=0;
+		Arrays.fill(parent, -1);
+		ArrayDeque<Integer> q=new ArrayDeque<>();
+		q.add(1);
+		parent[1]=1;
+		order[oi++]=1;
+
+		while(!q.isEmpty()) {
+			int a=q.removeFirst();
+			for(int ni=head[a]; ni!=-1; ni=nxt[ni]) {
+				int b=to[ni];
+
+				if(parent[b]==-1) {
+					parent[b]=a;
+					order[oi++]=b;
+					q.add(b);
+				}
+			}
+		}
+
+		int[][] dist=new int[n+1][2];
+		for(int i=oi-1; i>=0; i--) {
+			int a=order[i];
+
+			int conta=nums[a-1];
+			int contb=0;
+
+			for(int ni=head[a]; ni!=-1; ni=nxt[ni]) {
+				int b=to[ni];
+
+				if(b==parent[a]) continue;
+
+				conta+=dist[b][0];
+				contb+=Math.max(dist[b][1], dist[b][0]);
+			}
+			dist[a][1]=conta;
+			dist[a][0]=contb;
+		}
 
 		List<Integer> ret=new ArrayList<>();
-		buildString(start, p0>p1 ? 0 : 1, -1, ret);
-		
-		
 
-		return Math.max(p0, p1)+"\n"+ret.stream().sorted().map(String::valueOf).collect(java.util.stream.Collectors.joining(" "));
-	}
+		int[] flags=new int[n+1];
+		flags[1]=dist[1][0]>dist[1][1] ? 0 : 1;
+		q.add(1);
 
-	void buildString(int cur, int sel, int parent, List<Integer> holder) {
-		if(sel==1) holder.add(cur+1);
+		while(!q.isEmpty()) {
+			int a=q.removeFirst();
+			if(flags[a]==1) ret.add(a);
+			for(int ni=head[a]; ni!=-1; ni=nxt[ni]) {
+				int b=to[ni];
 
-		for(int next: adj[cur]) {
-			if(next==parent) continue;
-			if(sel==1) {
-				buildString(next, 0, cur, holder);
-			} else {
-				int next0=find(next, 0, -1);
-				int next1=find(next, 1, -1);
-				buildString(next, next0>next1 ? 0 : 1, cur, holder);
+				if(b==parent[a]) continue;
+
+				if(flags[a]==0) {
+					if(dist[b][1]>dist[b][0]) {
+						flags[b]=1;
+					}
+				}
+				q.add(b);
 			}
 		}
 
+		ret.sort(Comparator.naturalOrder());
+
+		return Math.max(dist[1][0], dist[1][1]) + "\n" + ret.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(" "));
+
 	}
 
-	int find(int cur, int ps, int parent) {
-		if(memo[cur][ps]!=-1) return memo[cur][ps];
-		
-		int ret=0;
-		if(ps==1) {
-			ret=d[cur];
-			for(int next: adj[cur]) {
-				if(next==parent) continue;
-				ret+=find(next, 0, cur);
-			}
-		} else {
-			for(int next: adj[cur]) {
-				if(next==parent) continue;
-				ret+=Math.max(find(next, 0, cur), find(next, 1, cur));
-			}
-		}
-		return memo[cur][ps]=ret;
-	}
+	void init(int n, int[][] edge) {
+		int E=edge.length;
+		this.head=new int[n+1];
+		Arrays.fill(head, -1);
+		this.nxt=new int[E*2];
+		this.to=new int[E*2];
 
-	@SuppressWarnings("unchecked")
-	int init(int v, int[][] edge) {
-		this.V=v;
-		this.adj=new ArrayList[V];
-		for(int i=0; i<V; i++) adj[i]=new ArrayList<>();
-		int[] ind=new int[V];
+		int ei=0;
 		for(int[] e: edge) {
-			adj[e[0]-1].add(e[1]-1);
-			adj[e[1]-1].add(e[0]-1);
-			ind[e[0]-1]++; ind[e[1]-1]++;
-		}
+			int a=e[0], b=e[1];
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
 
-		for(int i=0; i<V; i++) {
-			if(ind[i]==1) return i;
+			to[ei]=a;
+			nxt[ei]=head[b];
+			head[b]=ei++;
 		}
-		return -1;
 	}
-
 }
