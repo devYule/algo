@@ -5,11 +5,12 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-			int v=Integer.parseInt(br.readLine());
-			int e=Integer.parseInt(br.readLine());
+			int n=Integer.parseInt(br.readLine());
+			int m=Integer.parseInt(br.readLine());
 
-			int[][] edge=new int[e][3];
-			for(int i=0; i<e; i++) {
+			int[][] edge=new int[m][3];
+
+			for(int i=0; i<m; i++) {
 				StringTokenizer st=new StringTokenizer(br.readLine());
 				edge[i][0]=Integer.parseInt(st.nextToken());
 				edge[i][1]=Integer.parseInt(st.nextToken());
@@ -20,11 +21,10 @@ public class Main {
 			int from=Integer.parseInt(st.nextToken());
 			int to=Integer.parseInt(st.nextToken());
 
-
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						v, e, edge, from, to
+						n, m, edge, from, to
 					)
 				)
 			);
@@ -32,66 +32,73 @@ public class Main {
 		}
 	}
 
-	int ni, head[], nxt[], to[], wt[];
+	int head[], to[], nxt[], wt[];
 
-	String resolve(int v, int e, int[][] edge, int from, int end) {
-		v++;
-		init(v, e, edge);
-		int[] parent=new int[v];
-		int[] dist=new int[v];
-		final int INF=(int)1e9;
-		for(int i=0; i<v; i++) {
-			parent[i]=-1;
-			dist[i]=INF;
-		}
-		PriorityQueue<Integer> q=new PriorityQueue<>((a, b) -> dist[a]-dist[b]);
-		q.add(from);
+	String resolve(int n, int m, int[][] edge, int from, int to) {
+		init(n, edge);
+
+		PriorityQueue<int[]> q=new PriorityQueue<>((a, b) -> a[0]-b[0]);
+		int[] dist=new int[n+1];
+		int[] parent=new int[n+1];
+		Arrays.fill(dist, (int)1e9+1);
+		Arrays.fill(parent, -1);
+
 		dist[from]=0;
-		parent[from]=from;
+		parent[from]=0;
+		q.add(new int[] {0, from});
 
 		while(!q.isEmpty()) {
-			int cur=q.poll();
-			int cost=dist[cur];
-			for(int i=head[cur]; i!=-1; i=nxt[i]) {
-				int next=to[i];
-				int nextDist=cost+wt[i];
-				if(dist[next]>nextDist) {
-					parent[next]=cur;
-					dist[next]=nextDist;
-					q.add(next);
+			int[] curs=q.poll();
+			int a=curs[1];
+			int cost=curs[0];
+
+			if(dist[a]!=cost) continue;
+
+			for(int i=head[a]; i!=-1; i=nxt[i]) {
+				int b=this.to[i];
+
+				int nextCost=cost+wt[i];
+				if(dist[b]>nextCost) {
+					parent[b]=a;
+					dist[b]=nextCost;
+					q.add(new int[] {nextCost, b});
 				}
 			}
 		}
 
 		List<Integer> ret=new ArrayList<>();
-		int target=end;
+
+		ret.add(to);
+		int cur=to;
 		while(true) {
-			ret.add(target);
-			if(parent[target]==target) break;
-			target=parent[target];
+			cur=parent[cur];
+			ret.add(cur);
+			if(cur==from) break;
 		}
 
 		Collections.reverse(ret);
 
-		return dist[end] + "\n" +
-			ret.size() + "\n" +
-			ret.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(" "));
+		return dist[to] + "\n" + ret.size() + "\n" + ret.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(" "));
+
 	}
 
-	void init(int v, int m, int[][] edge) {
-		this.head=new int[v];
+	void init(int n, int[][] edge) {
+		int E=edge.length;
+		this.head=new int[n+1];
 		Arrays.fill(head, -1);
-		this.nxt=new int[m];
-		this.to=new int[m];
-		this.wt=new int[m];
-		this.ni=0;
 
+		this.to=new int[E];
+		this.nxt=new int[E];
+		this.wt=new int[E];
+		int ei=0;
 		for(int[] e: edge) {
 			int a=e[0], b=e[1], w=e[2];
-			wt[ni]=w;
-			to[ni]=b;
-			nxt[ni]=head[a];
-			head[a]=ni++;
+
+			wt[ei]=w;
+			to[ei]=b;
+			nxt[ei]=head[a];
+			head[a]=ei++;
+
 		}
 	}
 
