@@ -6,11 +6,11 @@ public class Main {
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
 			int n=Integer.parseInt(br.readLine());
-
 			int[] nums=new int[n];
 			StringTokenizer st=new StringTokenizer(br.readLine());
-
-			for(int i=0; i<n; i++) nums[i]=Integer.parseInt(st.nextToken());
+			for(int i=0; i<n; i++) {
+				nums[i]=Integer.parseInt(st.nextToken());
+			}
 
 			bw.write(
 				String.valueOf(
@@ -24,27 +24,28 @@ public class Main {
 	}
 
 	int resolve(int n, int[] nums) {
-		int[] incDp=new int[n];
-		int[] decDp=new int[n];
-		for(int i=0; i<n; i++) { incDp[i]=1; decDp[i]=1; }
+		int[] lrdp=new int[n];
+		int[] rldp=new int[n];
 
 		for(int i=0; i<n; i++) {
+			lrdp[i]=1;
 			for(int j=0; j<i; j++) {
-				if(nums[i]>nums[j]) incDp[i]=Math.max(incDp[i], incDp[j]+1);
+				if(nums[i]>nums[j]) lrdp[i]=Math.max(lrdp[i], lrdp[j]+1);
 			}
 		}
 
 		for(int i=n-1; i>=0; i--) {
+			rldp[i]=1;
 			for(int j=i+1; j<n; j++) {
-				if(nums[i]>nums[j]) decDp[i]=Math.max(decDp[i], decDp[j]+1);
+				if(nums[i]>nums[j]) rldp[i]=Math.max(rldp[i], rldp[j]+1);
 			}
 		}
 
 		int ret=0;
 		for(int i=0; i<n; i++) {
-			ret=Math.max(ret, incDp[i]+decDp[i]-1);
+			ret=Math.max(ret, lrdp[i]+rldp[i]);
 		}
-		return ret;
+		return ret-1;
 	}
 
 }
