@@ -24,28 +24,52 @@ public class Main {
 	}
 
 	int resolve(int n, int[] nums) {
-		int[] lrdp=new int[n];
-		int[] rldp=new int[n];
+		int[] cnt=new int[n];
 
-		for(int i=0; i<n; i++) {
-			lrdp[i]=1;
-			for(int j=0; j<i; j++) {
-				if(nums[i]>nums[j]) lrdp[i]=Math.max(lrdp[i], lrdp[j]+1);
+		int[] tails=new int[n];
+		int ti=1;
+		tails[0]=nums[0];
+		cnt[0]++;
+		for(int i=1; i<n; i++) {
+			if(nums[i]>tails[ti-1]) {
+				tails[ti++]=nums[i];
+				cnt[i]+=ti;
+			} else {
+				int loc=binsearch(0, ti-1, tails, nums[i]);
+				cnt[i]+=loc+1;
+				tails[loc]=nums[i];
 			}
 		}
 
-		for(int i=n-1; i>=0; i--) {
-			rldp[i]=1;
-			for(int j=i+1; j<n; j++) {
-				if(nums[i]>nums[j]) rldp[i]=Math.max(rldp[i], rldp[j]+1);
+		tails=new int[n];
+		ti=1;
+		tails[0]=nums[n-1];
+		cnt[n-1]++;
+		for(int i=n-2; i>=0; i--) {
+			if(nums[i]>tails[ti-1]) {
+				tails[ti++]=nums[i];
+				cnt[i]+=ti;
+			} else {
+				int loc=binsearch(0, ti-1, tails, nums[i]);
+				tails[loc]=nums[i];
+				cnt[i]+=loc+1;
 			}
 		}
 
 		int ret=0;
 		for(int i=0; i<n; i++) {
-			ret=Math.max(ret, lrdp[i]+rldp[i]);
+			ret=Math.max(ret, cnt[i]);
 		}
 		return ret-1;
+	}
+
+	int binsearch(int l, int h, int[] tails, int target) {
+		while(l<=h) {
+			int mid=(l+h) >>> 1;
+			if(tails[mid]>=target) h=mid-1;
+			else l=mid+1;
+		}
+		return l;
 	}
 
 }
