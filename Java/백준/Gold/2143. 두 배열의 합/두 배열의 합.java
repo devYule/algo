@@ -47,7 +47,6 @@ public class Main {
 			}
 		}
 
-		nsum.sort(Comparator.naturalOrder());
 		msum.sort(Comparator.naturalOrder());
 
 		long ret=0;
