@@ -28,30 +28,31 @@ public class Main {
 
 	String POS="YES", NEG="NO";
 	String resolve(int n, String[] tk) {
-		Arrays.sort(tk, (a, b) -> {
-			int ai=0, bi=0;
-			while(ai<a.length() && bi<b.length()) {
-				if(a.charAt(ai)!=b.charAt(bi)) {
-					return a.charAt(ai)-b.charAt(bi);
-				}
-				ai++; bi++;
-			}
-			return a.length()-b.length();
-		});
-
-		for(int i=0; i<n-1; i++) {
-			String c=tk[i];
-			String t=tk[i+1];
-			boolean cont=true;
-			for(int j=0; j<c.length(); j++) {
-				if(c.charAt(j)!=t.charAt(j)) {
-					cont=false;
-					break;
-				}
-			}
-			if(cont) return NEG;
+		Trie root=new Trie();
+		for(String t: tk) {
+			if(!root.add(t, 0)) return NEG;
 		}
 		return POS;
+	}
+
+	class Trie {
+		Trie[] children=new Trie[10];
+		boolean terminal;
+
+		boolean add(String s, int idx) {
+			if(idx==s.length()) return terminal=true;
+			int cur=toNum(s.charAt(idx));
+			if(idx==s.length()-1 && children[cur]!=null) return false;
+			if(children[cur]==null) children[cur]=new Trie();
+			Trie c=children[cur];
+			if(c.terminal) return false;
+
+			return c.add(s, idx+1);
+		}
+
+		int toNum(char c) {
+			return c-'0';
+		}
 	}
 
 }
