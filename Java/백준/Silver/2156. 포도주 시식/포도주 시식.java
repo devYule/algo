@@ -21,22 +21,26 @@ public class Main {
 	}
 
 	int resolve(int n, int[] wine) {
+		if(n<=2) {
+			int r=0;
+			for(int i=0; i<n; i++) r+=wine[i];
+			return r;
+		}
 		int[] dp=new int[n+1];
-		if(n<=2) return Arrays.stream(wine).sum();
-		
 		dp[1]=wine[0];
 		dp[2]=wine[0]+wine[1];
-
-		int ret=0;
 		for(int i=3; i<=n; i++) {
-			ret=Math.max(ret, dp[i]=Math.max(
-				dp[i-1], Math.max(
-					wine[i-1]+dp[i-2],
-					wine[i-1]+wine[i-2]+dp[i-3]
+			int wi=i-1;
+			dp[i]=dp[i-1];
+			dp[i]=Math.max(
+				dp[i],
+				Math.max(
+					wine[wi]+wine[wi-1]+dp[i-3],
+					wine[wi]+dp[i-2]
 				)
-			));
+			);
 		}
-		return ret;
+		return dp[n];
 	}
 
 }
