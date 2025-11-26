@@ -33,7 +33,7 @@ public class Main {
 		}
 	}
 
-	int head[], next[], to[], wt[];
+	int head[], next[], to[], wt[], ind[];
 
 	String resolve(int n, int m, int[][] edge, int f, int t) {
 		init(n, edge);
@@ -48,10 +48,8 @@ public class Main {
 			for(int ni=head[a]; ni!=-1; ni=next[ni]) {
 				int b=to[ni];
 				int nd=dist[a]+wt[ni];
-				if(dist[b]<nd) {
-					dist[b]=nd;
-					q.add(b);
-				}
+				if(dist[b]<nd) dist[b]=nd;
+				if(--ind[b]==0) q.add(b);
 			}
 		}
 
@@ -84,6 +82,7 @@ public class Main {
 		next=new int[E];
 		to=new int[E];
 		wt=new int[E];
+		ind=new int[n+1];
 
 		int ei=0;
 		for(int[] e: edge) {
@@ -92,6 +91,7 @@ public class Main {
 			to[ei]=b;
 			next[ei]=head[a];
 			head[a]=ei++;
+			ind[b]++;
 		}
 	}
 
