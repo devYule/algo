@@ -18,8 +18,6 @@ public class Main {
 
 	String resolve(char[] S) {
 		int i=0;
-		boolean open=false;
-		int start=-1;
 		StringBuilder ret=new StringBuilder();
 		while(i<S.length) {
 			if(S[i]=='<') {
