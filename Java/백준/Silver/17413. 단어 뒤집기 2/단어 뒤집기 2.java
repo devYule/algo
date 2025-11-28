@@ -8,7 +8,7 @@ public class Main {
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						br.readLine()
+						br.readLine().toCharArray()
 					)
 				)
 			);
@@ -16,42 +16,30 @@ public class Main {
 		}
 	}
 
-	String resolve(String S) {
-		int idx=0;
+	String resolve(char[] S) {
+		int i=0;
 		boolean open=false;
 		int start=-1;
 		StringBuilder ret=new StringBuilder();
-		while(idx<S.length()) {
-			if(start==-1) start=idx;
-			if(!open) {
-				if(S.charAt(idx)==' ') {
-					ret.append(reverse(S.substring(start, idx)));
-					ret.append(" ");
-					start=-1;
-				} else if(S.charAt(idx)=='<') {
-					if(start!=idx) ret.append(reverse(S.substring(start, idx)));
-					ret.append("<");
-					open=true;
-				}
-			} else {
-				ret.append(String.valueOf(S.charAt(idx)));
-				if(S.charAt(idx)=='>') {
-					start=-1;
-					open=false;
-				}
+		while(i<S.length) {
+			if(S[i]=='<') {
+				while(i<S.length && S[i]!='>') i++;
+				i++;
+				continue;
 			}
-			idx++;
+			if(S[i]==' ') { i++; continue; }
+			int from=i;
+			while(i<S.length && S[i]!=' ' && S[i]!='<') i++;
+			int to=i-1;
+			int gap=to-from;
+			while(from<to) {
+				char tmp=S[from];
+				S[from]=S[to];
+				S[to]=tmp;
+				from++;
+				to--;
+			}
 		}
-		if(start!=-1) ret.append(reverse(S.substring(start, S.length())));
-		return ret.toString();
+		return new String(S);
 	}
-
-	String reverse(String word) {
-		char[] c=new char[word.length()];
-		for(int i=word.length()-1; i>=0; i--) {
-			c[word.length()-i-1]=word.charAt(i);
-		}
-		return new String(c);
-	}
-
 }
