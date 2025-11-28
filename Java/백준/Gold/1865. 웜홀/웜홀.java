@@ -43,28 +43,42 @@ public class Main {
 	}
 
 	String resolve(int n, int m, int w, int[][] edge) {
-		int MAX=(int)1e9;
-		int[][] adj=new int[n+1][n+1];
-		for(int i=0; i<=n; i++) {
-			Arrays.fill(adj[i], MAX);
-			adj[i][i]=0;
-		}
+		int[] head=new int[n+1];
+		Arrays.fill(head, -1);
+		int[] to=new int[m*2+w];
+		int[] next=new int[m*2+w];
+		int[] wt=new int[m*2+w];
+		int ei=0;
 		for(int[] e: edge) {
-			adj[e[0]][e[1]]=Math.min(adj[e[0]][e[1]], e[2]);
-			if(e[2]>0) adj[e[1]][e[0]]=Math.min(adj[e[1]][e[0]], e[2]);
-		}
+			int a=e[0], b=e[1], d=e[2];
+			wt[ei]=d;
+			to[ei]=b;
+			next[ei]=head[a];
+			head[a]=ei++;
 
-		for(int k=1; k<=n; k++) {
-			for(int i=1; i<=n; i++) {
-				if(i==k || adj[i][k]==MAX) continue;
-				for(int j=1; j<=n; j++) {
-					if(j==k) continue;
-					adj[i][j]=Math.min(adj[i][j], adj[i][k]+adj[k][j]);
-					if(adj[j][j]<0) return "YES";
-				}
+			if(d>0) {
+				wt[ei]=d;
+				to[ei]=a;
+				next[ei]=head[b];
+				head[b]=ei++;
 			}
 		}
-
+		int[] dist=new int[n+1];
+		boolean updated=false;
+		for(int i=0; i<=n; i++) {
+			updated=false;
+			for(int a=0; a<=n; a++) {
+				for(int ni=head[a]; ni!=-1; ni=next[ni]) {
+					int b=to[ni];
+					if(dist[b]>dist[a]+wt[ni]) {
+						dist[b]=dist[a]+wt[ni];
+						updated=true;
+					}
+				}
+			}
+			if(!updated) break;
+		}
+		if(updated) return "YES";
 		return "NO";
 	}
 
