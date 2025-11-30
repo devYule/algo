@@ -20,20 +20,18 @@ public class Main {
 		}
 	}
 
-	long[] memo;
+	Map<Long, Long> memo;
 	long resolve(long n, int p, int q) {
-		memo=new long[10000001];
-		Arrays.fill(memo, -1);
+		memo=new HashMap<>();
 		return find(n, p, q);
 	}
 
 	long find(long x, int p, int q) {
 		if(x==0) return 1L;
 		if(x==1) return 2L;
-		if(x<memo.length && memo[(int)x]!=-1) return memo[(int)x];
-		long ret=find(x/p, p, q)+find(x/q, p, q);
-		if(x<memo.length) memo[(int)x]=ret;
-		return ret;
+		if(memo.get(x)!=null) return memo.get(x);
+		memo.put(x, find(x/p, p, q)+find(x/q, p, q));
+		return memo.get(x);
 	}
 
 }
