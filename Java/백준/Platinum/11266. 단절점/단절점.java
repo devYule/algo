@@ -55,7 +55,6 @@ public class Main {
 		int childCnt=0;
 		for(int ni=head[a]; ni!=-1; ni=next[ni]) {
 			int b=to[ni];
-			if(b==parent) continue;
 			if(rank[b]!=0) min=Math.min(min, rank[b]);
 			else {
 				childCnt++;
