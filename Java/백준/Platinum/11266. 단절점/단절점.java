@@ -35,7 +35,7 @@ public class Main {
 
 		for(int i=1; i<=n; i++) {
 			if(rank[i]==0) {
-				find(i, -1, true);
+				find(i, true);
 			}
 		}
 
@@ -49,7 +49,7 @@ public class Main {
 		return rets.size() + "\n" + rets.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(" "));
 	}
 
-	int find(int a, int parent, boolean isRoot) {
+	int find(int a, boolean isRoot) {
 		rank[a]=irank++;
 		int min=rank[a];
 		int childCnt=0;
@@ -58,7 +58,7 @@ public class Main {
 			if(rank[b]!=0) min=Math.min(min, rank[b]);
 			else {
 				childCnt++;
-				int submin=find(b, a, false);
+				int submin=find(b, false);
 				if(submin>=rank[a]) cut[a]=true;
 				min=Math.min(min, submin);
 			}
