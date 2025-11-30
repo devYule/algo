@@ -21,7 +21,6 @@ public class Main {
 		}
 	}
 
-	// -24 -6 -3 -2 61 98 100
 	String resolve(int n, int[] nums) {
 		Arrays.sort(nums);
 		int[] rets=new int[3];
