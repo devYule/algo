@@ -5,12 +5,15 @@ public class Main {
 		try(BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 			BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-			int[] a=Arrays.stream(br.readLine().split("\\s")).mapToInt(Integer::parseInt).toArray();
+			StringTokenizer st=new StringTokenizer(br.readLine());
+			int n=Integer.parseInt(st.nextToken());
+			int r=Integer.parseInt(st.nextToken());
+			int c=Integer.parseInt(st.nextToken());
 
 			bw.write(
 				String.valueOf(
 					new Main().resolve(
-						a[0], a[1], a[2]
+						n, r, c
 					)
 				)
 			);
@@ -18,23 +21,36 @@ public class Main {
 		}
 	}
 
+	int r, c;
 	int resolve(int n, int r, int c) {
-		return find((int)Math.pow(2, n), r, c);
+		this.r=r;
+		this.c=c;
+		int end=(int)Math.pow(2, n)-1;
+		return find(0, 0, end, end, 0);
 	}
 
-	int find(int n, int r, int c) {
-		if(n==2) return r*n+c;
-		int center=n/2-1;
-		int prev=0;
-		if(r>center && c>center) prev=3;
-		else if(r>center) prev=2;
-		else if(c>center) prev=1;
-		int add=prev*((center+1)*(center+1));
-		int newr=r;
-		int newc=c;
-		if(newr>center) newr%=center+1;
-		if(newc>center) newc%=center+1;
-		return find(n/2, newr, newc)+add;
+	int find(int sy, int sx, int ey, int ex, int acc) {
+		if(sy==ey && sx==ex) return acc;
+
+		int ymid=(sy+ey)>>>1;
+		int xmid=(sx+ex)>>>1;
+		int fsize=(ymid-sy+1)*(xmid-sx+1);
+
+		int[][] each=new int[][] {
+			{sy, sx, ymid, xmid},
+			{sy, xmid+1, ymid, ex},
+			{ymid+1, sx, ey, xmid},
+			{ymid+1, xmid+1, ey, ex}
+		};
+
+		int nacc=acc;
+		for(int[] e: each) {
+			if(r>=e[0] && c>=e[1] && r<=e[2] && c<=e[3]) {
+				return find(e[0], e[1], e[2], e[3], nacc);
+			}
+			nacc+=fsize;
+		}
+		throw new RuntimeException();
 	}
 
 }
