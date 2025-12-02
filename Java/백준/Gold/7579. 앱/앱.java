@@ -30,17 +30,20 @@ public class Main {
 	}
 
 	int resolve(int n, int m, int[] free, int[] cost) {
-		int[] dp=new int[m+1];
-		Arrays.fill(dp, (int)1e9);
+		int costMax=Arrays.stream(cost).sum();
+		int[] dp=new int[costMax+1];
 		dp[0]=0;
 		for(int i=0; i<n; i++) {
 			int f=free[i];
 			int c=cost[i];
-			for(int j=m; j>=0; j--) {
-				dp[j]=Math.min(dp[j], dp[Math.max(0, j-f)]+c);
+			for(int j=costMax; j>=c; j--) {
+				dp[j]=Math.max(dp[j], dp[j-c]+f);
 			}
 		}
-		return dp[m];
+		for(int i=0; i<=costMax; i++) {
+			if(dp[i]>=m) return i;
+		}
+		return 0;
 	}
 
 }
