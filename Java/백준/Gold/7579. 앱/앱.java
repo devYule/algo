@@ -10,12 +10,13 @@ public class Main {
 			int m=Integer.parseInt(st.nextToken());
 			int[] free=new int[n];
 			int[] cost=new int[n];
+			StringTokenizer stfree=new StringTokenizer(br.readLine());
+			StringTokenizer stcost=new StringTokenizer(br.readLine());
 
-			st=new StringTokenizer(br.readLine());
-			for(int i=0; i<n; i++) free[i]=Integer.parseInt(st.nextToken());
-
-			st=new StringTokenizer(br.readLine());
-			for(int i=0; i<n; i++) cost[i]=Integer.parseInt(st.nextToken());
+			for(int i=0; i<n; i++) {
+				free[i]=Integer.parseInt(stfree.nextToken());
+				cost[i]=Integer.parseInt(stcost.nextToken());
+			}
 
 			bw.write(
 				String.valueOf(
@@ -33,9 +34,10 @@ public class Main {
 		Arrays.fill(dp, (int)1e9);
 		dp[0]=0;
 		for(int i=0; i<n; i++) {
-			int w=free[i];
+			int f=free[i];
+			int c=cost[i];
 			for(int j=m; j>=0; j--) {
-				dp[j]=Math.min(dp[j], dp[Math.max(0, j-w)]+cost[i]);
+				dp[j]=Math.min(dp[j], dp[Math.max(0, j-f)]+c);
 			}
 		}
 		return dp[m];
