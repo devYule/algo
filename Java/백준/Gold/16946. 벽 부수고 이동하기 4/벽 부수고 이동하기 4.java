@@ -34,7 +34,7 @@ public class Main {
 		int[] cg=new int[] {0, 1, 0, -1};
 		int id=1;
 		int[][] ids=new int[n][m];
-		Map<Integer, Integer> distPerId=new HashMap<>();
+		int[] distPerId=new int[n*m+1];
 		boolean[][] vis=new boolean[n][m];
 		for(int i=0; i<n; i++) {
 			for(int j=0; j<m; j++) {
@@ -58,7 +58,7 @@ public class Main {
 						}
 					}
 				}
-				distPerId.put(id, dist%10);
+				distPerId[id]=dist%10;
 
 				id++;
 			}
@@ -74,17 +74,24 @@ public class Main {
 					continue;
 				}
 				int l=1;
-				Set<Integer> idSet=new HashSet<>();
+				int ida=0, idb=0, idc=0, idd=0;
+
 				for(int k=0; k<4; k++) {
 					int ny=i+rg[k];
 					int nx=j+cg[k];
 					if(ny>=0 && nx>=0 && ny<n && nx<m && map[ny][nx]!=1) {
-						idSet.add(ids[ny][nx]);
+						int cid=ids[ny][nx];
+						if(cid==ida || cid==idb || cid==idc || cid==idd) {
+							continue;
+						}
+						if(ida==0) ida=cid;
+						else if(idb==0) idb=cid;
+						else if(idc==0) idc=cid;
+						else idd=cid;
 					}
 				}
 
-				l+=idSet.stream().mapToInt(it->distPerId.get(it)).sum();
-				
+				l+=distPerId[ida]+distPerId[idb]+distPerId[idc]+distPerId[idd];
 				sb.append(String.valueOf(l%10));
 			}
 		}
