@@ -23,45 +23,58 @@ public class Main {
 		}
 	}
 
-	class Each {
-		int value;
-		StringBuilder sb;
-		Each(int v) { this.value=v; sb=new StringBuilder(); }
-		Each(int v, StringBuilder sb, String last) { this.value=v; this.sb=new StringBuilder().append(sb).append(last); }
-	}
+
 
 	String resolve(int a, int b) {
-		PriorityQueue<Each> q=new PriorityQueue<>((ae, be) -> ae.sb.length()-be.sb.length());
-		q.add(new Each(a));
+		ArrayDeque<Integer> q=new ArrayDeque<>();
+		q.add(a);
 
-		boolean[] vis=new boolean[10001];
-		vis[a]=true;
+		int[] prev=new int[10001];
+		int[] select=new int[10001];
+		Arrays.fill(prev, -1);
+		Arrays.fill(select, -1);
+		prev[a]=a;
 		while(!q.isEmpty()) {
-			Each e=q.poll();
-			int v=e.value;
-			if(v==b) return e.sb.toString();
-			vis[v]=true;
-			int dv=D(v);
-			if(!vis[dv]) {
-				vis[dv]=true;
-				q.add(new Each(dv, e.sb, "D"));
+			int cur=q.removeFirst();
+			if(cur==b) {
+				break;
 			}
-			int sv=S(v);
-			if(!vis[sv]) {
-				q.add(new Each(sv, e.sb, "S"));
+			int d=D(cur);
+			int s=S(cur);
+			int l=L(cur);
+			int r=R(cur);
+
+			if(prev[d]==-1) {
+				prev[d]=cur;
+				select[d]=0;
+				q.add(d);
 			}
-			int lv=L(v);
-			if(!vis[lv]) {
-				vis[lv]=true;
-				q.add(new Each(lv, e.sb, "L"));
+			if(prev[s]==-1) {
+				prev[s]=cur;
+				select[s]=1;
+				q.add(s);
 			}
-			int rv=R(v);
-			if(!vis[rv]) {
-				vis[rv]=true;
-				q.add(new Each(rv, e.sb, "R"));
+			if(prev[l]==-1) {
+				prev[l]=cur;
+				select[l]=2;
+				q.add(l);
+			}
+			if(prev[r]==-1) {
+				prev[r]=cur;
+				select[r]=3;
+				q.add(r);
 			}
 		}
-		return "-1";
+
+		String[] s=new String[] {"D", "S", "L", "R"};
+		StringBuilder sb=new StringBuilder();
+		int cur=b;
+		while(true) {
+			if(cur==a) break;
+			sb.append(s[select[cur]]);
+			cur=prev[cur];
+		}
+		return sb.reverse().toString();
 	}
 
 	int D(int a) {
